@@ -29,9 +29,9 @@ button{cursor:pointer;-webkit-tap-highlight-color:transparent}
 .scroll::-webkit-scrollbar{display:none}
 .hero{position:relative;color:#fff;padding:calc(18px + env(safe-area-inset-top,0px)) 20px 26px;overflow:hidden;touch-action:pan-y}
 .ph{position:absolute;inset:0;z-index:0}
-.ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:opacity .7s}
-.ph::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(28,72,160,.45) 0%,rgba(59,123,224,.55) 38%,rgba(143,182,239,.82) 72%,#fff 100%)}
-.hero.plain .ph{background:linear-gradient(180deg,var(--sky) 0%,var(--sky2) 70%,#fff 100%)}
+.ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:opacity .7s;-webkit-mask-image:linear-gradient(#000 62%,transparent 100%);mask-image:linear-gradient(#000 62%,transparent 100%)}
+.ph::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,10,16,.5) 0%,rgba(8,10,16,.22) 34%,rgba(8,10,16,.28) 58%,rgba(8,10,16,0) 80%)}
+.hero.plain .ph{background:linear-gradient(180deg,#2a2f3a 0%,#59606d 60%,#fff 100%)}
 .hero.plain .ph::after{display:none}
 .hero>*:not(.ph){position:relative;z-index:1}
 .arc{position:relative;height:66px;margin:0 -20px}
@@ -41,14 +41,16 @@ button{cursor:pointer;-webkit-tap-highlight-color:transparent}
 .seg{position:relative;display:flex;width:max-content;margin:14px auto 0;padding:3px;border-radius:999px;gap:2px}
 .seg a{position:relative;z-index:1;color:rgba(255,255,255,.7);text-decoration:none;font-size:14px;font-weight:500;padding:7px 14px;border-radius:999px;transition:color .25s}
 .seg a.on{color:#fff}
-.seg .ind{background:rgba(255,255,255,.28)}
+.seg{background:rgba(0,0,0,.18);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+.seg .ind{background:rgba(255,255,255,.3)}
 .ind{position:absolute;left:0;top:0;height:0;border-radius:999px;pointer-events:none;z-index:0}
 .big{text-align:center;font:300 clamp(96px,30vw,128px)/1 "Inter",sans-serif;letter-spacing:-.04em;margin:18px 0 0;font-variant-numeric:tabular-nums;white-space:nowrap}
 .big.money{font-size:clamp(56px,17vw,84px);margin-top:26px}
 .big small{font-size:.32em;letter-spacing:-.01em;margin-left:4px}
-.cap{text-align:center;font-size:15px;margin-top:4px;color:rgba(255,255,255,.95)}
+.cap{text-align:center;font-size:15px;margin-top:4px;color:rgba(255,255,255,.95);text-shadow:0 1px 10px rgba(0,0,0,.35)}
+.big,.arc button,.seg a{text-shadow:0 2px 16px rgba(0,0,0,.25)}
 .tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:26px}
-.tile{border-radius:18px;padding:14px 8px;text-align:center;background:rgba(255,255,255,.42);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);color:var(--ink)}
+.tile{border-radius:18px;padding:14px 8px;text-align:center;background:rgba(255,255,255,.62);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);color:var(--ink)}
 .tile span{display:block;font-size:13px;color:#5d6574}
 .tile b{display:block;font:600 18px "Inter","IBM Plex Sans KR",sans-serif;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .dots{display:flex;justify-content:center;gap:5px;margin-top:12px}
@@ -127,15 +129,41 @@ textarea.in{min-height:120px;resize:vertical;line-height:1.55}
 .ex b{font:500 15px "Inter",sans-serif;white-space:nowrap}
 .ex small{display:block;color:var(--sub);font-size:12.5px}
 .x{border:0;background:none;color:var(--sub);min-width:36px;min-height:36px;font-size:18px}
+.agbox{background:var(--card);border-radius:20px;padding:12px;margin-top:12px}
+.agbox .in{background:#fff;border:0;min-height:84px}
+.mic{display:inline-flex;align-items:center;gap:8px;border:0;border-radius:999px;background:#fff;padding:10px 16px;min-height:44px;font-weight:500}
+.mic svg{width:20px;height:20px}
+.mic.on{background:var(--warn);color:#fff;animation:pulse 1.2s ease-in-out infinite}
+@keyframes pulse{50%{box-shadow:0 0 0 8px rgba(224,97,59,.18)}}
+.agi{display:grid;grid-template-columns:4.2em minmax(0,1fr);gap:10px;align-items:center;padding:12px 4px;border-bottom:1px solid var(--line)}
+.agi .t{font:500 16px "Inter",sans-serif}.agi b{display:block;font-weight:600}.agi small{color:var(--sub);font-size:12.5px}
+.seg2{display:flex;background:#fff;border:1px solid var(--line);border-radius:999px;padding:3px}
+.seg2 button{flex:1;border:0;background:none;border-radius:999px;min-height:40px;font-weight:500;font-size:14px;color:var(--sub)}
+.seg2 button.on{background:var(--ink);color:#fff}
+.rc{padding:6px}
+.rcbtn{display:flex;align-items:center;gap:14px;padding:14px;border-radius:18px;background:linear-gradient(135deg,#3b7be0,#8fb6ef);color:#fff;cursor:pointer}
+.rcbtn b{display:block;font-size:16px;font-weight:600}.rcbtn small{display:block;font-size:12.5px;opacity:.9}
+.rci{width:46px;height:46px;border-radius:14px;background:rgba(255,255,255,.25);display:grid;place-items:center;flex:none}
+.rci svg{width:24px;height:24px}
+.rcp{display:flex;gap:12px;align-items:center;padding:12px 10px 6px;font-size:13px;color:var(--sub)}
+.rcp img{width:54px;height:72px;object-fit:cover;border-radius:10px;flex:none}
+.settle .sv,.sv{margin:8px 0 0;color:var(--sub);font-size:13.5px}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.split div{background:#fff;border-radius:14px;padding:10px 12px}
+.split span{display:block;font-size:12px;color:var(--sub)}.split b{font:600 15px "Inter",sans-serif;white-space:nowrap}
+.filters{display:flex;gap:6px;margin-top:14px}
+.tag{display:inline-block;font-size:11px;font-weight:600;border-radius:6px;padding:1px 6px;margin-right:6px;vertical-align:1px}
+.tag.shared{background:#e3edfc;color:#2e64c0}.tag.personal{background:#fdeee5;color:#c0592e}
 .todo{display:flex;gap:12px;align-items:center;padding:14px 2px;border-bottom:1px solid var(--line);cursor:pointer}
 .todo:last-child{border-bottom:0}
 .todo.done span{text-decoration:line-through;color:var(--sub)}
-.bar{position:absolute;left:0;right:0;bottom:0;z-index:8;display:flex;align-items:center;justify-content:space-between;padding:12px 22px calc(16px + env(safe-area-inset-bottom,0px));background:linear-gradient(rgba(255,255,255,0),#fff 38%)}
-.nav{display:flex;gap:18px;align-items:center}
-.nav a{width:36px;height:36px;display:grid;place-items:center;color:#a3a9b3}
+.bar{position:absolute;left:0;right:0;bottom:0;z-index:8;display:flex;justify-content:center;padding:14px 16px calc(14px + env(safe-area-inset-bottom,0px));background:linear-gradient(rgba(255,255,255,0),rgba(255,255,255,.95) 45%);pointer-events:none}
+.nav{pointer-events:auto;display:flex;gap:4px;align-items:center;background:#fff;border-radius:999px;padding:6px 8px;box-shadow:0 0 0 1px var(--line),0 12px 30px -14px rgba(20,30,60,.35)}
+.nav a{width:58px;display:grid;justify-items:center;gap:1px;color:#a3a9b3;text-decoration:none;font-size:10.5px;font-weight:500;padding:4px 0}
 .nav a.on{color:var(--ink)}
-.nav svg{width:24px;height:24px}
-.fab{width:54px;height:54px;border-radius:50%;border:0;background:var(--ink);color:#fff;display:grid;place-items:center;box-shadow:0 8px 20px -8px rgba(0,0,0,.45)}
+.nav svg{width:22px;height:22px}
+.nav .fab{margin:0 6px}
+.fab{width:50px;height:50px;border-radius:50%;border:0;background:var(--ink);color:#fff;display:grid;place-items:center;box-shadow:0 8px 20px -8px rgba(0,0,0,.45)}
 .fab svg{width:24px;height:24px}
 .scrim{position:absolute;inset:0;background:rgba(15,17,21,.32);z-index:10;opacity:0;pointer-events:none}
 .scrim.on{pointer-events:auto}
@@ -203,15 +231,17 @@ const SEED = {
 
 let n = 0;
 SEED.days.forEach(d => { d.items = d.items.map(a => ({id: "i" + (n++), t: a[0], txt: a[1], sub: a[2], place: a[3]})); });
-const FP = f => "https://commons.wikimedia.org/wiki/Special:FilePath/" + encodeURIComponent(f) + "?width=1000";
+const FP = f => "https://commons.wikimedia.org/wiki/Special:FilePath/" + encodeURIComponent(f) + "?width=1600";
 const FPAGE = f => "https://commons.wikimedia.org/wiki/File:" + encodeURIComponent(f.replace(/ /g, "_"));
 const PHOTO = {
-  d1: ["Nakasu view from Fuku-haku-deai-bashi Bridge Fukuoka City 20221129.jpg", "Hirho", "나카스, 후쿠하쿠데아이 다리"],
-  d2: ["Sunset in Ohori Park.JPG", "そらみみ (Soramimi)", "오호리·마이즈루 공원의 노을"],
-  d3: ["Beppu Umi-jigoku04n4272.jpg", "663highland", "벳푸 우미지고쿠"],
-  d4: ["Beppu Kan-nawa-hotspring01.jpg", "Miya.m", "벳푸 간나와 온천"],
-  d5: ["FukuokaTenjin.JPG", "R34SkylineGT-R V-SpecⅡNür", "텐진 솔라리아 스테이지"],
-  d6: ["Fukuoka Seaside Momochi Aerial Shoot.jpg", "Chihaya Sta", "후쿠오카공항 착륙 중 본 모모치"]
+  d1: ["Nakasu Yatai Stalls (19979437930).jpg", "Yoshikazu TAKADA", "나카스 포장마차 거리의 밤"],
+  d2: ["Views from Fukuoka Tower at night 20230104-1.jpg", "Suicasmo", "후쿠오카 타워에서 본 야경"],
+  d3: ["Beppu Kannawa Onsen03n4272.jpg", "663highland", "온천 증기가 오르는 벳푸 간나와"],
+  d4: ["Beppu Umi-jigoku04n4272.jpg", "663highland", "벳푸 우미지고쿠"],
+  d5: ["Fukuoka nightview.jpg", "Narnars0", "후쿠오카 시내 야경"],
+  d6: ["Fukuoka Skyline of Seaside Momochi.jpg", "Nryate", "시사이드 모모치 스카이라인"],
+  budget: ["Night View in Beppu City.jpg", "そらみみ", "벳푸 시내 야경"],
+  todo: ["Sunset in Ohori Park.JPG", "そらみみ (Soramimi)", "오호리·마이즈루 공원의 노을"]
 };
 const PLACE_PHOTO = {
   "인천국제공항": ["Incheon International Airport Terminal 1 Departure.jpg", "Arne Müseler"],
@@ -284,7 +314,8 @@ function enter(els, gap, y) { els = [...els].filter(Boolean); if (RM || !els.len
 
 let S;
 try { const l = localStorage.getItem("fk4"); S = l ? JSON.parse(l) : clone(SEED); if (S.v !== 2) S = clone(SEED); } catch (e) { S = clone(SEED); }
-let cur = 0, view = "plan", tab = "list", bTab = "cats", mapFocus = null, undo = null, edit = null, pendImg = null, lastLeft = null;
+let listF = "all";
+let cur = 0, view = "plan", tab = "list", bTab = "add", mapFocus = null, undo = null, edit = null, pendImg = null, lastLeft = null;
 function persist() { try { localStorage.setItem("fk4", JSON.stringify(S)); } catch (e) { toast("브라우저 저장 공간이 꽉 찼습니다. 사진을 줄여주세요"); } }
 function save(msg, snap) { undo = snap || null; persist(); toast(msg, !!snap); }
 function toast(msg, u) { const t = $("#toast"); t.innerHTML = "<span></span>" + (u ? '<button id="undo">되돌리기</button>' : ""); t.firstChild.textContent = msg; t.classList.add("on"); clearTimeout(t.h); t.h = setTimeout(() => t.classList.remove("on"), u ? 4000 : 1800); }
@@ -294,6 +325,8 @@ const I = {
   wal: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2" stroke-linecap="round"/></svg>',
   chk: '<svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 22a2.5 2.5 0 0 0 2.4-2h-4.8a2.5 2.5 0 0 0 2.4 2Zm7-6V11a7 7 0 0 0-5.5-6.8V3.5a1.5 1.5 0 0 0-3 0v.7A7 7 0 0 0 5 11v5l-2 2v1h18v-1Z"/></svg>',
   bed: '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 18V7M3 14h18v4M21 14v-2a3 3 0 0 0-3-3h-7v5"/><circle cx="7" cy="11" r="2"/></svg>',
+  cam: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4Z"/><circle cx="12" cy="13" r="3.5"/></svg>',
+  mic: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>',
   plus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
   out: '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M8 16 16 8M9 8h7v7"/></svg>'
 };
@@ -305,7 +338,7 @@ function layoutArc(p) {
   arcPos = p; const W = $(".arc").clientWidth, step = Math.min(78, W / 5.2);
   $$(".arc button").forEach((b, i) => { const o = i - p, a = Math.abs(o); b.style.transform = `translate(${o * step}px, ${Math.min(a, 2.2) ** 1.25 * -11 + 22}px)`; b.style.opacity = a > 2.6 ? 0 : Math.max(.25, 1 - a * .28); b.classList.toggle("on", Math.round(p) === i); b.tabIndex = a > 2.6 ? -1 : 0; });
 }
-function photoFor() { if (view !== "plan") return null; return PHOTO[S.days[cur].id]; }
+function photoFor() { return view === "plan" ? PHOTO[S.days[cur].id] : PHOTO[view]; }
 function setPhoto() {
   const box = $("#ph"), ph = photoFor(), hero = $("#hero");
   hero.classList.toggle("plain", !ph);
@@ -329,8 +362,8 @@ function heroBody() {
       tiles: [["일정", d.items.length + "개"], ["장소", places + "곳"], ["숙소", d.hotel ? d.hotel.replace("호텔 ", "").split(" ")[0] : "귀국"]]};
   }
   if (view === "budget") {
-    const used = S.budget.reduce((a, b) => a + spent(b), 0), fx = S.budget.filter(b => b.fixed), paid = fx.filter(b => b.paid).reduce((a, b) => a + b.amt, 0), fxa = fx.reduce((a, b) => a + b.amt, 0);
-    return {big: null, left: S.total - used, cap: "둘이서 남은 예산", tiles: [["사용률", (used / S.total * 100).toFixed(0) + "%"], ["쓴 돈", Math.round(used / 10000) + "만"], ["항공·숙박", (fxa ? paid / fxa * 100 : 0).toFixed(0) + "%"]]};
+    const L = ledger(), man = v => (Math.round(v / 1000) / 10).toLocaleString("ko-KR") + "만";
+    return {big: null, left: L.total, cap: `둘이 쓴 돈 · 예산 ${Math.round(S.total / 10000)}만 원 중 ${(L.total / S.total * 100).toFixed(0)}%`, tiles: [[L.A, man(L.useA)], [L.B, man(L.useB)], ["공용", man(L.shared)]]};
   }
   const done = S.todos.filter(t => t.done).length;
   return {big: `${done}<small>/${S.todos.length}</small>`, cap: "정한 것", tiles: [["남음", S.todos.length - done + "개"], ["출발까지", dday()], ["기록", S.expenses.length + "건"]]};
@@ -343,7 +376,7 @@ function drawHero(animNum) {
   $("#tiles").innerHTML = h.tiles.map(t => `<div class="tile"><span>${esc(t[0])}</span><b>${esc(t[1])}</b></div>`).join("");
   $(".arc").style.display = view === "plan" ? "" : "none";
   $("#dots").innerHTML = view === "plan" ? S.days.map((d, i) => `<i class="${i === cur ? "on" : ""}"></i>`).join("") : "";
-  if (view === "budget") { const to = h.left, from = lastLeft === null ? S.total : lastLeft; lastLeft = to; tween(from, to, {stiffness: 110, damping: 24}, v => { $("#big").innerHTML = Math.round(v / 1000).toLocaleString("ko-KR") + "<small>천원</small>"; }); }
+  if (view === "budget") { const to = h.left, from = lastLeft === null ? 0 : lastLeft; lastLeft = to; tween(from, to, {stiffness: 110, damping: 24}, v => { $("#big").innerHTML = Math.round(v / 1000).toLocaleString("ko-KR") + "<small>천원</small>"; }); }
   if (animNum && MO && !RM) MO.animate("#big", {y: [animNum * 24, 0], opacity: [0, 1]}, {type: "spring", stiffness: 260, damping: 26});
   setPhoto();
 }
@@ -363,22 +396,76 @@ function planMain() {
   else body = `<div class="card"><label class="lbl" for="memo" style="margin-top:0">${+d.date.slice(5, 7)}월 ${+d.date.slice(8)}일 메모</label><textarea class="in" id="memo" placeholder="둘이 나눠 볼 메모">${esc(d.note)}</textarea><div class="row" style="justify-content:flex-end"><button class="btn" id="memoSave">메모 저장</button></div></div>`;
   return `<h2>오늘 일정</h2><div class="tabs" id="tabs"><span class="ind"></span><button data-tab="list" class="${tab === "list" ? "on" : ""}">시간표</button><button data-tab="map" class="${tab === "map" ? "on" : ""}">지도</button><button data-tab="memo" class="${tab === "memo" ? "on" : ""}">메모</button></div><div id="tb">${body}</div>`;
 }
+function names() { return [S.nameA || "동엽", S.nameB || "여자친구"]; }
+function ledger() {
+  const [A, B] = names(); let sharedA = 0, sharedB = 0, perA = 0, perB = 0, fixed = 0;
+  S.budget.forEach(b => { if (b.fixed && b.paid) fixed += b.amt; });
+  S.expenses.forEach(e => { const v = krw(e); if ((e.kind || "shared") === "shared") (e.who === "b" ? sharedB += v : sharedA += v); else (e.who === "b" ? perB += v : perA += v); });
+  const shared = sharedA + sharedB + fixed, useA = perA + shared / 2, useB = perB + shared / 2;
+  const bal = sharedA - (sharedA + sharedB) / 2;
+  return {A, B, shared, sharedA, sharedB, perA, perB, fixed, useA, useB, total: useA + useB, bal};
+}
 function budgetMain() {
-  let body = "";
-  if (bTab === "cats") body = S.budget.map(b => { const s = spent(b), p = b.amt ? s / b.amt : 0, over = p > 1;
+  const L = ledger(); let body = "";
+  if (bTab === "add") body = `<div class="card rc"><label class="rcbtn" for="rc-in"><span class="rci">${I.cam}</span><span><b>영수증 찍어서 올리기</b><small>금액·가게·날짜를 읽어서 아래 칸을 채워요</small></span></label><input type="file" id="rc-in" accept="image/*" capture="environment" hidden><div id="rc-st"></div></div>
+    <div class="card"><label class="lbl" style="margin-top:0">누가 냈나요</label><div class="seg2" id="x-who"><button data-who="a" class="on">${esc(L.A)}</button><button data-who="b">${esc(L.B)}</button></div>
+      <label class="lbl">나눠 낼까요</label><div class="seg2" id="x-kind"><button data-kind="shared" class="on">공용 (반반)</button><button data-kind="personal">개인</button></div>
+      <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px"><div><label class="lbl" for="x-cat">항목</label><select class="in" id="x-cat">${S.budget.filter(b => !b.fixed).map(b => `<option value="${b.id}">${esc(b.cat)}</option>`).join("")}</select></div><div><label class="lbl" for="x-day">날짜</label><select class="in" id="x-day">${S.days.map((d, i) => `<option value="${d.id}"${i === cur ? " selected" : ""}>${+d.date.slice(5, 7)}/${+d.date.slice(8)}</option>`).join("")}</select></div></div>
+      <label class="lbl" for="x-amt">금액</label><div class="row" style="margin:0;flex-wrap:nowrap"><input class="in" id="x-amt" inputmode="decimal" placeholder="0"><span class="cur" id="x-cur"><button data-cur="JPY" class="on" aria-label="엔">¥</button><button data-cur="KRW" aria-label="원">₩</button></span></div>
+      <label class="lbl" for="x-memo">가게 / 메모</label><input class="in" id="x-memo" placeholder="어디서 무엇을">
+      <div class="row"><span style="font-size:12.5px;color:var(--sub)">¥1 = <input class="in" id="rate" value="${S.rate}" inputmode="decimal" style="width:5.4em;display:inline-block;min-height:34px;padding:4px 8px"> 원</span><button class="btn" id="x-add">기록하기</button></div></div>`;
+  else if (bTab === "list") {
+    const who = L.bal >= 0 ? [L.B, L.A] : [L.A, L.B], amt = Math.abs(L.bal);
+    body = `<div class="card settle"><div class="ch"><div><b>정산</b><small>공용 지출 반반 기준</small></div><span class="t" style="font-size:20px">${amt < 1 ? "정산 끝" : won(amt)}</span></div>
+      <p class="sv">${amt < 1 ? "서로 낸 공용 금액이 같아요" : `${esc(who[0])} → ${esc(who[1])}에게 보내면 돼요`}</p>
+      <div class="split"><div><span>${esc(L.A)} 낸 공용</span><b>${won(L.sharedA)}</b></div><div><span>${esc(L.B)} 낸 공용</span><b>${won(L.sharedB)}</b></div></div></div>
+      <div class="filters">${[["all", "전체"], ["shared", "공용"], ["personal", "개인"]].map(f => `<button class="pill${listF === f[0] ? " on" : ""}" data-lf="${f[0]}">${f[1]}</button>`).join("")}</div>
+      <div class="card" style="padding:4px 16px">${S.expenses.slice().reverse().filter(e => listF === "all" || (e.kind || "shared") === listF).map(e => { const b = S.budget.find(x => x.id === e.cat), d = S.days.find(x => x.id === e.day), k = (e.kind || "shared"); return `<div class="ex"><span><span class="tag ${k}">${k === "shared" ? "공용" : "개인"}</span>${esc(e.memo || (b ? b.cat : ""))}<small>${esc((d ? +d.date.slice(5, 7) + "/" + +d.date.slice(8) + " · " : "") + (b ? b.cat : "") + " · " + (e.who === "b" ? L.B : L.A) + " 결제")}</small></span><b>${e.cur === "JPY" ? "¥" + e.amount.toLocaleString() : won(e.amount)}</b><button class="x" data-dx="${esc(e.id)}" aria-label="지출 삭제">×</button></div>`; }).join("") || '<p class="empty">아직 기록이 없어요. 기록 탭에서 영수증을 올려보세요.</p>'}</div>
+      <div class="card"><b style="font-size:15px">둘이 같이 쓰기</b><p class="sv" style="margin-top:4px">각자 기록한 뒤 "내 기록 보내기"로 복사해 카톡으로 보내고, 받은 쪽은 "받은 기록 합치기"에 붙여넣으면 겹치지 않게 합쳐져요.</p><div class="row" style="justify-content:flex-start"><button class="btn soft" id="sync-out">내 기록 보내기</button><button class="btn soft" id="sync-in">받은 기록 합치기</button></div><textarea class="in" id="sync-box" placeholder="받은 기록을 여기에 붙여넣고 다시 '받은 기록 합치기'를 누르세요" style="display:none;min-height:80px;margin-top:10px;font-size:12px"></textarea></div>`;
+  }
+  else body = S.budget.map(b => { const s = spent(b), p = b.amt ? s / b.amt : 0, over = p > 1;
     return `<div class="card"><div class="ch"><div><b>${esc(b.cat)}</b><small>예산 ${won(b.amt)}</small></div><span class="t">${Math.round(s / 1000).toLocaleString()}<span style="font-size:14px;margin-left:2px">천원</span></span></div>
       <div class="gauge"><i style="width:${Math.min(100, p * 100).toFixed(1)}%"></i><u style="left:${Math.min(100, p * 100).toFixed(1)}%"></u></div><div class="scale"><span>0</span><span>${won(b.amt)}</span></div>
-      <div class="foot">${b.fixed ? `<label class="chk"><input type="checkbox" data-paid="${b.id}"${b.paid ? " checked" : ""}>결제 완료로 반영</label>` : `<span>${(p * 100).toFixed(0)}% 사용</span>`}<span class="st"><i style="background:${over ? "var(--warn)" : "var(--ok)"}"></i>${over ? "초과" : "여유"}</span></div></div>`; }).join("");
-  else if (bTab === "add") body = `<div class="card"><div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px"><div><label class="lbl" for="x-cat" style="margin-top:0">항목</label><select class="in" id="x-cat">${S.budget.map(b => `<option value="${b.id}">${esc(b.cat)}</option>`).join("")}</select></div><div><label class="lbl" for="x-day" style="margin-top:0">날짜</label><select class="in" id="x-day">${S.days.map((d, i) => `<option value="${d.id}"${i === cur ? " selected" : ""}>${+d.date.slice(5, 7)}/${+d.date.slice(8)}</option>`).join("")}</select></div></div>
-    <label class="lbl" for="x-amt">금액</label><div class="row" style="margin:0;flex-wrap:nowrap"><input class="in" id="x-amt" inputmode="decimal" placeholder="0"><span class="cur" id="x-cur"><button data-cur="JPY" class="on" aria-label="엔">¥</button><button data-cur="KRW" aria-label="원">₩</button></span></div>
-    <label class="lbl" for="x-memo">메모</label><input class="in" id="x-memo" placeholder="어디서 무엇을">
-    <div class="row"><span style="font-size:12.5px;color:var(--sub)">¥1 = <input class="in" id="rate" value="${S.rate}" inputmode="decimal" style="width:5.4em;display:inline-block;min-height:34px;padding:4px 8px"> 원</span><button class="btn" id="x-add">기록하기</button></div></div>`;
-  else body = `<div class="card" style="padding:4px 16px">${S.expenses.slice().reverse().map(e => { const b = S.budget.find(x => x.id === e.cat), d = S.days.find(x => x.id === e.day); return `<div class="ex"><span>${esc(e.memo || (b ? b.cat : ""))}<small>${esc((d ? +d.date.slice(5, 7) + "/" + +d.date.slice(8) + ", " : "") + (b ? b.cat : ""))}</small></span><b>${e.cur === "JPY" ? "¥" + e.amount.toLocaleString() : won(e.amount)}</b><button class="x" data-dx="${esc(e.id)}" aria-label="지출 삭제">×</button></div>`; }).join("") || '<p class="empty">아직 기록이 없어요. 기록 탭에서 쓴 돈을 적어두세요.</p>'}</div>`;
-  return `<h2>예산 관리</h2><div class="tabs" id="tabs"><span class="ind"></span><button data-btab="cats" class="${bTab === "cats" ? "on" : ""}">항목별</button><button data-btab="add" class="${bTab === "add" ? "on" : ""}">기록</button><button data-btab="list" class="${bTab === "list" ? "on" : ""}">내역</button></div><div id="tb">${body}</div>`;
+      <div class="foot">${b.fixed ? `<label class="chk"><input type="checkbox" data-paid="${b.id}"${b.paid ? " checked" : ""}>결제 완료 (공용으로 반반)</label>` : `<span>${(p * 100).toFixed(0)}% 사용</span>`}<span class="st"><i style="background:${over ? "var(--warn)" : "var(--ok)"}"></i>${over ? "초과" : "여유"}</span></div></div>`; }).join("");
+  return `<h2>예산 관리</h2><div class="tabs" id="tabs"><span class="ind"></span><button data-btab="add" class="${bTab === "add" ? "on" : ""}">기록</button><button data-btab="list" class="${bTab === "list" ? "on" : ""}">내역·정산</button><button data-btab="cats" class="${bTab === "cats" ? "on" : ""}">항목별</button></div><div id="tb">${body}</div>`;
+}
+/* ---------- receipt OCR ---------- */
+let tessP = null;
+function loadTess() { if (tessP) return tessP; tessP = new Promise((res, rej) => { if (window.Tesseract) return res(window.Tesseract); const sc = document.createElement("script"); sc.src = "https://cdn.jsdelivr.net/npm/tesseract.js@5.1.1/dist/tesseract.min.js"; sc.onload = () => res(window.Tesseract); sc.onerror = () => { tessP = null; rej(new Error("load")); }; document.head.appendChild(sc); }); return tessP; }
+const z2h = s => s.replace(/[０-９]/g, c => String.fromCharCode(c.charCodeAt(0) - 0xFEE0)).replace(/[，、]/g, ",").replace(/[￥]/g, "¥");
+function parseReceipt(raw) {
+  const lines = z2h(raw).split(/\n+/).map(l => l.trim()).filter(Boolean), num = l => { const m = l.replace(/\s/g, "").match(/[¥\\]?(\d{1,3}(?:,\d{3})+|\d{2,7})(?=円|$|\D)/g); return m ? m.map(x => +x.replace(/[^\d]/g, "")).filter(v => v > 0 && v < 2000000) : []; };
+  let total = null;
+  for (const re of [/(税込)?合\s*計|総\s*計|お会計|ご請求|お買上|TOTAL|Total/, /(?<!小)計/]) { for (const l of lines) if (re.test(l) && !/小計|お預|釣/.test(l)) { const v = num(l); if (v.length) { total = Math.max(...v); break; } } if (total) break; }
+  if (!total) { const all = lines.filter(l => /¥|円/.test(l) && !/お預|釣|TEL|電話/.test(l)).flatMap(num); if (all.length) total = Math.max(...all); }
+  const store = lines.find(l => !/\d{3,}/.test(l) && /[぀-ヿ一-鿿A-Za-z]{2,}/.test(l) && l.length < 30) || "";
+  const dm = z2h(raw).match(/(20\d{2})\s*[年\/.\-]\s*(\d{1,2})\s*[月\/.\-]\s*(\d{1,2})/);
+  const day = dm ? S.days.find(d => +d.date.slice(5, 7) === +dm[2] && +d.date.slice(8) === +dm[3]) : null;
+  const t = raw;
+  const cat = /タクシー|TAXI|JR|駅|鉄道|バス|地下鉄|切符|IC/.test(t) ? "b6" : /ラーメン|食堂|レストラン|居酒屋|カフェ|珈琲|コーヒー|寿司|焼|麺|定食|ビール|食/.test(t) ? "b5" : /入場|チケット|券|館|園/.test(t) ? "b7" : /UNIQLO|ユニクロ|GU|BEAMS|衣料|アパレル|ZARA|服/.test(t) ? "b9" : /ドラッグ|薬|ドン|ローソン|ファミリーマート|セブン|コンビニ|土産|みやげ/.test(t) ? "b8" : null;
+  return {total, store, day, cat};
+}
+async function readReceipt(file) {
+  const st = $("#rc-st"), url = URL.createObjectURL(file);
+  st.innerHTML = `<div class="rcp"><img src="${url}" alt="올린 영수증"><span id="rc-msg">영수증 읽는 중… 처음엔 글자 데이터를 받느라 20초쯤 걸려요</span></div>`;
+  try {
+    const T = await loadTess(); const w = await T.createWorker("jpn+eng"); const {data} = await w.recognize(file); await w.terminate();
+    const r = parseReceipt(data.text || "");
+    if (r.total) { $("#x-amt").value = r.total; $$("#x-cur button").forEach(b => b.classList.toggle("on", b.dataset.cur === "JPY")); }
+    if (r.store) $("#x-memo").value = r.store;
+    if (r.day) $("#x-day").value = r.day.id;
+    if (r.cat) $("#x-cat").value = r.cat;
+    $("#rc-msg").textContent = r.total ? `¥${r.total.toLocaleString()}로 읽었어요. 금액이 맞는지 보고, 공용/개인을 고른 뒤 기록하세요` : "합계 금액을 찾지 못했어요. 금액만 직접 입력해주세요";
+    if (MO && !RM) MO.animate("#x-amt", {backgroundColor: ["#fff4c2", "#ffffff"]}, {duration: 1.2});
+  } catch (e) { $("#rc-msg").textContent = "영수증을 읽지 못했어요. 인터넷 연결을 확인하거나 금액을 직접 입력해주세요"; }
 }
 function todoMain() {
   return `<h2>정할 것</h2><div class="card" style="padding:4px 16px">${S.todos.map(t => `<label class="todo${t.done ? " done" : ""}"><input type="checkbox" data-todo="${esc(t.id)}"${t.done ? " checked" : ""}><span>${esc(t.txt)}</span></label>`).join("")}</div>
     <div class="row" style="flex-wrap:nowrap"><input class="in" id="todo-new" placeholder="정할 것 추가"><button class="btn" id="todo-add">추가</button></div>
+    <h2 style="margin-top:28px">우리 이름</h2><div class="card"><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div><label class="lbl" for="nameA" style="margin-top:0">나</label><input class="in" id="nameA" value="${esc(names()[0])}"></div><div><label class="lbl" for="nameB" style="margin-top:0">여자친구</label><input class="in" id="nameB" value="${esc(names()[1])}"></div></div><p class="sv">예산 화면의 개인별 금액과 정산에 이 이름이 쓰여요.</p></div>
+    <h2 style="margin-top:28px">AI 일정 비서</h2><div class="card"><p style="margin:0;color:var(--sub);font-size:13.5px">+ 버튼으로 말하거나 적으면 일정이 바로 등록돼요. 키가 없어도 "12월 1일 오후 3시 캐널시티 구경" 같은 말은 알아듣고, Claude API 키를 넣으면 더 자유롭게 말해도 돼요. 키는 이 브라우저에만 저장돼요.</p>
+      <label class="lbl" for="akey">Claude API 키</label><input class="in" id="akey" value="${esc(aKey)}" placeholder="sk-ant-..." autocomplete="off" spellcheck="false">
+      <div class="row" style="justify-content:flex-end"><button class="btn" id="akeySave">저장</button></div></div>
     <h2 style="margin-top:28px">장소 대표 사진</h2><div class="card"><p style="margin:0;color:var(--sub);font-size:13.5px">호텔·식당의 구글 대표 사진을 띄우려면 Google 지도 API 키가 필요해요. 키는 이 브라우저에만 저장되고 사이트 코드에는 들어가지 않아요. 키가 없으면 공항·역은 위키미디어 사진, 나머지는 지도로 보여요.</p>
       <label class="lbl" for="gkey">Google 지도 API 키</label><input class="in" id="gkey" value="${esc(gKey)}" placeholder="AIza..." autocomplete="off" spellcheck="false">
       <div class="row"><span style="font-size:12.5px;color:var(--sub)">Maps JavaScript API와 Places API (New)를 켜야 해요</span><button class="btn" id="gkeySave">저장</button></div></div>
@@ -408,7 +495,7 @@ function route() {
   let h = (location.hash || "#plan").slice(1); const m = /^day([1-6])$/.exec(h);
   if (m) { cur = +m[1] - 1; h = "plan"; }
   const nv = ["plan", "budget", "todo"].includes(h) ? h : "plan", changed = nv !== view; view = nv;
-  closeSheet(); drawAll(changed ? 1 : 0); layoutArc(cur); if (changed) $("#scroll").scrollTo({top: 0, behavior: RM ? "auto" : "smooth"});
+  closeSheet(); closeAgent(); drawAll(changed ? 1 : 0); layoutArc(cur); if (changed) $("#scroll").scrollTo({top: 0, behavior: RM ? "auto" : "smooth"});
 }
 function goDay(i) {
   i = Math.max(0, Math.min(S.days.length - 1, i)); if (i === cur) { tween(arcPos, cur, {}, layoutArc); return; }
@@ -444,6 +531,77 @@ const mins = t => { const m = /^(\d{1,2}):(\d{2})/.exec(t || ""); return m ? +m[
 function placeAt(items, it) { const v = mins(it.t); if (v === null) return items.push(it); const k = items.findIndex(x => mins(x.t) !== null && mins(x.t) > v); k < 0 ? items.push(it) : items.splice(k, 0, it); }
 async function shrink(file) { const u = URL.createObjectURL(file); const im = await new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = no; i.src = u; }); const k = Math.min(1, 640 / Math.max(im.width, im.height)), c = document.createElement("canvas"); c.width = Math.round(im.width * k); c.height = Math.round(im.height * k); c.getContext("2d").drawImage(im, 0, 0, c.width, c.height); URL.revokeObjectURL(u); return c.toDataURL("image/jpeg", .72); }
 
+/* ---------- AI 일정 비서 ---------- */
+let aKey = ""; try { aKey = localStorage.getItem("fk4-akey") || ""; } catch (e) {}
+function localParse(text) {
+  const out = [], parts = text.replace(/\s+/g, " ").split(/\s*(?:그리고|그 다음에|다음에|그다음|,|\n|\.)\s*/).filter(x => x && x.length > 1);
+  let day = cur;
+  for (let seg of parts) {
+    let m;
+    if ((m = seg.match(/(\d{1,2})\s*월\s*(\d{1,2})\s*일/))) { const d = S.days.findIndex(x => +x.date.slice(5, 7) === +m[1] && +x.date.slice(8) === +m[2]); if (d >= 0) day = d; seg = seg.replace(m[0], " "); }
+    else if ((m = seg.match(/(\d)\s*일\s*차|DAY\s*(\d)/i))) { day = Math.min(5, Math.max(0, +(m[1] || m[2]) - 1)); seg = seg.replace(m[0], " "); }
+    else if ((m = seg.match(/(첫|둘|셋|넷|다섯|여섯)\s*(?:째)?\s*날/))) { day = ["첫", "둘", "셋", "넷", "다섯", "여섯"].indexOf(m[1]); seg = seg.replace(m[0], " "); }
+    else if ((m = seg.match(/(?:^|\s)(\d{1,2})\s*일(?!\s*차)/))) { const d = S.days.findIndex(x => +x.date.slice(8) === +m[1]); if (d >= 0) { day = d; seg = seg.replace(m[0], " "); } }
+    else if (/내일/.test(seg)) { day = Math.min(5, cur + 1); seg = seg.replace("내일", " "); }
+    let time = "";
+    if ((m = seg.match(/(\d{1,2}):(\d{2})/))) { time = m[1].padStart(2, "0") + ":" + m[2]; seg = seg.replace(m[0], " "); }
+    else if ((m = seg.match(/(오전|오후|아침|점심|저녁|밤|새벽)?\s*(\d{1,2})\s*시\s*(반|(\d{1,2})\s*분)?/))) {
+      let h = +m[2]; const pm = /오후|저녁|밤/.test(m[1] || "") || (/점심/.test(m[1] || "") && h < 6); if (pm && h < 12) h += 12; if (/오전|새벽|아침/.test(m[1] || "") && h === 12) h = 0;
+      time = String(h).padStart(2, "0") + ":" + (m[3] === "반" ? "30" : String(+(m[4] || 0)).padStart(2, "0")); seg = seg.replace(m[0], " ");
+    } else if ((m = seg.match(/아침|점심|저녁/))) { time = m[0]; }
+    seg = seg.replace(/(일정|추가|등록|해줘|해 줘|넣어줘|넣어 줘|잡아줘|에\s*$)/g, " ").replace(/\s+/g, " ").trim();
+    if (!seg) continue;
+    let place = "", pm2;
+    if ((pm2 = seg.match(/^(.+?)(?:에서|에 가서|가서)\s+(.+)$/))) { place = pm2[1].trim(); }
+    else if ((pm2 = seg.match(/^(.+?)\s*(?:가기|방문|구경|들르기|가보기|에 가기|체크인|체크아웃|에서 밥|식사|먹기)$/))) place = pm2[1].replace(/에$/, "").trim();
+    out.push({day, time: time || "미정", title: seg, place});
+  }
+  return out;
+}
+async function claudeParse(text) {
+  const daysTxt = S.days.map((d, i) => `${i + 1}일차 = ${d.date} (${d.wd}), ${d.region}`).join("\n");
+  const r = await fetch("https://api.anthropic.com/v1/messages", {method: "POST", headers: {"content-type": "application/json", "x-api-key": aKey, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true"},
+    body: JSON.stringify({model: "claude-haiku-5-5", max_tokens: 900, system: `후쿠오카·벳푸 여행 일정 앱의 일정 등록 도우미. 사용자의 말을 일정 항목으로 나눠 JSON 배열만 출력한다. 다른 글은 쓰지 않는다.\n여행 날짜:\n${daysTxt}\n지금 보고 있는 날: ${cur + 1}일차 (날짜를 말하지 않으면 이 날)\n각 항목 형식: {"day": 1~6, "time": "HH:MM" 또는 "아침"/"점심"/"저녁"/"미정", "title": "짧은 할 일", "place": "구글맵에서 찾을 장소 이름(일본 장소는 현지 이름이나 영어 병기), 없으면 빈 문자열"}`,
+      messages: [{role: "user", content: text}]})});
+  if (!r.ok) throw new Error(r.status === 401 ? "키가 맞지 않습니다" : "응답 오류 " + r.status);
+  const j = await r.json(), t = (j.content || []).map(c => c.text || "").join(""), a = JSON.parse(t.slice(t.indexOf("["), t.lastIndexOf("]") + 1));
+  return a.filter(x => x && x.title).map(x => ({day: Math.min(5, Math.max(0, (+x.day || cur + 1) - 1)), time: String(x.time || "미정").slice(0, 8), title: String(x.title).slice(0, 60), place: String(x.place || "").slice(0, 60)}));
+}
+let agY = 1;
+function openAgent() {
+  const ag = $("#agent"); $("#ag-in").value = ""; $("#ag-out").innerHTML = ""; $("#ag-mode").textContent = aKey ? "Claude가 알아들어요" : "기본 해석기 · 설정에서 Claude 키를 넣으면 더 똑똑해져요";
+  scrimTo(1); tween(agY, 0, {stiffness: 330, damping: 34}, v => { agY = v; ag.style.transform = `translateY(${v * 110}%)`; });
+  setTimeout(() => $("#ag-in").focus({preventScroll: true}), 350);
+}
+function closeAgent() { if (agY >= 1) return; stopMic(); if (sY >= 1) scrimTo(0); const ag = $("#agent"); tween(agY, 1, {stiffness: 360, damping: 36}, v => { agY = v; ag.style.transform = `translateY(${v * 110}%)`; }); }
+let rec = null;
+function stopMic() { if (rec) { try { rec.stop(); } catch (e) {} rec = null; } const b = $("#ag-mic"); if (b) b.classList.remove("on"); }
+function startMic() {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) return toast("이 브라우저는 음성 입력을 지원하지 않아요. 키보드의 마이크 버튼을 써주세요");
+  if (rec) return stopMic();
+  rec = new SR(); rec.lang = "ko-KR"; rec.interimResults = true; rec.continuous = false;
+  const base = $("#ag-in").value ? $("#ag-in").value + " " : "";
+  rec.onresult = e => { let s = ""; for (const r of e.results) s += r[0].transcript; $("#ag-in").value = base + s; };
+  rec.onend = () => { const v = $("#ag-in").value.trim(); stopMic(); if (v) runAgent(); };
+  rec.onerror = ev => { stopMic(); if (ev.error === "not-allowed") toast("마이크 권한이 꺼져 있어요. 브라우저 설정에서 허용해주세요"); };
+  $("#ag-mic").classList.add("on"); rec.start();
+}
+async function runAgent() {
+  const text = $("#ag-in").value.trim(); if (!text) return $("#ag-in").focus();
+  const out = $("#ag-out"); out.innerHTML = '<p class="sv">알아듣는 중…</p>';
+  let items = [];
+  try { items = aKey ? await claudeParse(text) : localParse(text); } catch (e) { items = localParse(text); toast("Claude 연결에 실패해 기본 해석기로 넣었어요 (" + e.message + ")"); }
+  if (!items.length) { out.innerHTML = '<p class="sv">일정을 찾지 못했어요. "12월 1일 오후 3시 캐널시티 구경"처럼 말해보세요.</p>'; return; }
+  const snap = clone(S), added = [];
+  items.forEach(x => { const it = {id: uid(), t: x.time || "미정", txt: x.title, sub: "", note: "", place: x.place ? {name: x.place, q: x.place, url: "", img: "", memo: ""} : null}; placeAt(S.days[x.day].items, it); added.push({x, it}); });
+  save(added.length + "개 일정을 등록했습니다", snap);
+  out.innerHTML = added.map(({x, it}) => `<div class="agi"><span class="t">${esc(it.t)}</span><span><b>${esc(it.txt)}</b><small>${+S.days[x.day].date.slice(5, 7)}/${+S.days[x.day].date.slice(8)} ${esc(S.days[x.day].region)}${it.place ? " · " + esc(it.place.name) : ""}</small></span></div>`).join("") + '<p class="sv">등록했어요. 틀린 건 일정 카드를 눌러 고치거나 위의 "되돌리기"를 누르세요.</p>';
+  enter($$(".agi"), .06, 10); $("#ag-in").value = "";
+  const target = added[0].x.day; if (target !== cur) { cur = target; layoutArc(cur); try { history.replaceState(null, "", "#day" + (cur + 1)); } catch (e) {} }
+  tab = "list"; drawHero(); drawMain();
+}
+
 /* ---------- shell ---------- */
 $("#root").innerHTML = `<div class="app"><div class="scroll" id="scroll">
   <section class="hero" id="hero"><div class="ph" id="ph"></div>
@@ -452,7 +610,7 @@ $("#root").innerHTML = `<div class="app"><div class="scroll" id="scroll">
     <p class="big" id="big"></p><p class="cap" id="cap"></p>
     <div class="tiles" id="tiles"></div><div class="dots" id="dots"></div><p class="credit" id="credit"></p></section>
   <section class="main" id="main"></section></div>
-  <div class="bar"><nav class="nav" aria-label="메뉴"><a href="#plan" data-v="plan" aria-label="일정">${I.home}</a><a href="#budget" data-v="budget" aria-label="예산">${I.wal}</a><a href="#todo" data-v="todo" aria-label="정할 것">${I.chk}</a></nav><button class="fab" id="fab" aria-label="추가">${I.plus}</button></div>
+  <div class="bar"><nav class="nav" aria-label="메뉴"><a href="#plan" data-v="plan" aria-label="일정">${I.home}<span>일정</span></a><a href="#budget" data-v="budget" aria-label="예산">${I.wal}<span>예산</span></a><button class="fab" id="fab" aria-label="추가">${I.plus}</button><a href="#todo" data-v="todo" aria-label="정할 것">${I.chk}<span>정할 것</span></a><a href="#budget" data-v="receipt" id="rcNav" aria-label="영수증">${I.cam}<span>영수증</span></a></nav></div>
   <div class="scrim" id="scrim"></div>
   <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="e-h"><div class="grip" id="grip"><i></i></div>
     <h3 id="e-h">일정</h3>
@@ -464,22 +622,37 @@ $("#root").innerHTML = `<div class="app"><div class="scroll" id="scroll">
     <div class="row"><span class="file"><label class="btn soft" for="f-img" style="display:inline-flex;align-items:center;cursor:pointer;min-height:40px;padding:8px 14px">내 사진으로 바꾸기</label><input type="file" id="f-img" accept="image/*"></span><button class="btn soft" id="f-noimg" style="min-height:40px;padding:8px 14px">지도로 되돌리기</button></div>
     <label class="lbl" for="f-memo">장소 메모</label><textarea class="in" id="f-memo" style="min-height:84px" placeholder="영업시간, 먹을 메뉴, 예약 여부"></textarea>
     <div class="row"><button class="del" id="f-del">이 일정 삭제</button><span style="display:flex;gap:8px"><button class="btn soft" id="f-close">닫기</button><button class="btn" id="f-save">저장</button></span></div></div>
+  <div class="sheet" id="agent" role="dialog" aria-modal="true" aria-labelledby="ag-h"><div class="grip"><i></i></div>
+    <h3 id="ag-h">말로 일정 추가</h3><p class="sv" id="ag-mode" style="margin-top:2px"></p>
+    <div class="agbox"><textarea class="in" id="ag-in" rows="3" placeholder="예) 12월 1일 오후 3시 캐널시티 구경, 저녁 7시 이치란에서 라멘"></textarea>
+      <div class="row" style="margin-top:10px"><button class="mic" id="ag-mic" aria-label="말하기">${I.mic}<span>말하기</span></button><span style="display:flex;gap:8px"><button class="btn soft" id="ag-manual">직접 입력</button><button class="btn" id="ag-go">등록</button></span></div></div>
+    <div id="ag-out"></div></div>
   <div class="toast" id="toast" role="status"></div></div>`;
 
 /* ---------- events ---------- */
 document.addEventListener("click", e => {
+  const rn = e.target.closest("#rcNav"); if (rn) { e.preventDefault(); bTab = "add"; if (view !== "budget") { location.hash = "#budget"; } else drawMain("tab"); setTimeout(() => { const a = $("#rc-in"); if (a) { a.scrollIntoView({block: "center", behavior: "smooth"}); } }, 300); return; }
   const t = e.target.closest("button"); if (!t) return; const d = t.dataset;
   if (t.id === "undo" && undo) { S = undo; undo = null; persist(); drawAll(); return toast("되돌렸습니다"); }
   if (d.go !== undefined) return goDay(+d.go);
   if (d.tab) { tab = d.tab; return drawMain("tab"); }
   if (d.btab) { bTab = d.btab; return drawMain("tab"); }
   if (d.mf) { mapFocus = d.mf; return drawMain(); }
-  if (t.id === "fab") { if (view === "budget") { bTab = "add"; drawMain("tab"); setTimeout(() => { const a = $("#x-amt"); if (a) { a.scrollIntoView({block: "center", behavior: "smooth"}); a.focus({preventScroll: true}); } }, 200); return; } if (view === "todo") { const x = $("#todo-new"); x.scrollIntoView({block: "center", behavior: "smooth"}); return x.focus({preventScroll: true}); } return openSheet(null); }
+  if (t.id === "fab") { if (view === "budget") { bTab = "add"; drawMain("tab"); setTimeout(() => { const a = $("#rc-in"); if (a) a.click(); }, 60); return; } if (view === "todo") { const x = $("#todo-new"); x.scrollIntoView({block: "center", behavior: "smooth"}); return x.focus({preventScroll: true}); } return openAgent(); }
+  if (t.id === "ag-go") return runAgent();
+  if (t.id === "ag-mic") return startMic();
+  if (t.id === "ag-manual") { closeAgent(); return setTimeout(() => openSheet(null), 200); }
+  if (t.id === "akeySave") { aKey = $("#akey").value.trim(); try { aKey ? localStorage.setItem("fk4-akey", aKey) : localStorage.removeItem("fk4-akey"); } catch (x) {} return toast(aKey ? "Claude 키를 저장했습니다" : "Claude 키를 지웠습니다"); }
   if (d.ed) return openSheet(d.ed);
   if (t.id === "memoSave") { S.days[cur].note = $("#memo").value; return save("메모를 저장했습니다"); }
+  if (d.who) { $$("#x-who button").forEach(b => b.classList.toggle("on", b === t)); return; }
+  if (d.kind) { $$("#x-kind button").forEach(b => b.classList.toggle("on", b === t)); return; }
+  if (d.lf) { listF = d.lf; return drawMain(); }
+  if (t.id === "sync-out") { const data = JSON.stringify({fk: 1, expenses: S.expenses, nameA: S.nameA, nameB: S.nameB}); const done = () => toast("내 기록을 복사했습니다. 카톡으로 보내세요"); if (navigator.clipboard) navigator.clipboard.writeText(data).then(done, () => { const b = $("#sync-box"); b.style.display = "block"; b.value = data; b.select(); toast("복사가 안 돼서 칸에 띄웠어요. 길게 눌러 복사하세요"); }); return; }
+  if (t.id === "sync-in") { const b = $("#sync-box"); if (b.style.display === "none" || !b.value.trim()) { b.style.display = "block"; b.value = ""; return b.focus(); } try { const o = JSON.parse(b.value.trim()); if (!o.fk || !Array.isArray(o.expenses)) throw 0; const ids = new Set(S.expenses.map(x => x.id)); let k = 0; o.expenses.forEach(x => { if (x && x.id && !ids.has(x.id) && typeof x.amount === "number") { S.expenses.push({id: String(x.id), cat: String(x.cat), day: String(x.day), amount: x.amount, cur: x.cur === "KRW" ? "KRW" : "JPY", memo: String(x.memo || "").slice(0, 80), kind: x.kind === "personal" ? "personal" : "shared", who: x.who === "b" ? "b" : "a"}); k++; } }); drawAll(); return save(k + "건을 합쳤습니다"); } catch (x) { return toast("기록 형식이 맞지 않습니다. 받은 내용을 그대로 붙여넣어주세요"); } }
   if (d.cur) { $$("#x-cur button").forEach(b => b.classList.toggle("on", b === t)); return; }
   if (d.dx) { const snap = clone(S); S.expenses = S.expenses.filter(x => x.id !== d.dx); drawAll(); return save("지출을 지웠습니다", snap); }
-  if (t.id === "x-add") { const a = parseFloat($("#x-amt").value.replace(/[^\d.]/g, "")); if (!(a > 0)) return $("#x-amt").focus(); S.expenses.push({id: uid(), cat: $("#x-cat").value, day: $("#x-day").value, amount: a, cur: ($("#x-cur .on") || {dataset: {}}).dataset.cur || "JPY", memo: $("#x-memo").value.trim()}); bTab = "list"; drawAll(); return save("지출을 기록했습니다"); }
+  if (t.id === "x-add") { const a = parseFloat($("#x-amt").value.replace(/[^\d.]/g, "")); if (!(a > 0)) return $("#x-amt").focus(); S.expenses.push({id: uid(), cat: $("#x-cat").value, day: $("#x-day").value, amount: a, cur: ($("#x-cur .on") || {dataset: {}}).dataset.cur || "JPY", memo: $("#x-memo").value.trim(), kind: ($("#x-kind .on") || {dataset: {}}).dataset.kind || "shared", who: ($("#x-who .on") || {dataset: {}}).dataset.who || "a"}); bTab = "list"; drawAll(); return save("지출을 기록했습니다"); }
   if (t.id === "todo-add") { const v = $("#todo-new").value.trim(); if (!v) return $("#todo-new").focus(); S.todos.push({id: uid(), txt: v, done: false}); drawAll(); return save("추가했습니다"); }
   if (t.id === "gkeySave") { gKey = $("#gkey").value.trim(); try { gKey ? localStorage.setItem("fk4-gkey", gKey) : localStorage.removeItem("fk4-gkey"); } catch (x) {} gLib = null; Object.keys(GP).forEach(k => delete GP[k]); return toast(gKey ? "키를 저장했습니다. 일정 탭에서 사진을 불러옵니다" : "키를 지웠습니다"); }
   if (t.id === "bk-out") { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([JSON.stringify(S)], {type: "application/json"})); a.download = "fukuoka-trip-backup.json"; a.click(); return toast("백업 파일을 내려받았습니다"); }
@@ -503,6 +676,8 @@ document.addEventListener("change", async e => {
   const t = e.target, d = t.dataset;
   if (d.todo) { S.todos.find(x => x.id === d.todo).done = t.checked; drawAll(); return save(t.checked ? "정했습니다" : "다시 정할 것으로 돌렸습니다"); }
   if (d.paid) { S.budget.find(x => x.id === d.paid).paid = t.checked; drawAll(); return save("예산에 반영했습니다"); }
+  if (t.id === "rc-in" && t.files[0]) return readReceipt(t.files[0]);
+  if (t.id === "nameA" || t.id === "nameB") { S[t.id] = t.value.trim().slice(0, 10); persist(); return toast("이름을 저장했습니다"); }
   if (d.note) { const it = S.days[cur].items.find(x => x.id === d.note); if (it) { it.note = t.value.trim(); save("메모를 저장했습니다"); } return; }
   if (t.id === "rate") { const r = parseFloat(t.value); if (r > 0) { S.rate = r; drawHero(); save("환율을 바꿨습니다"); } return; }
   if (t.id === "f-img" && t.files[0]) { try { pendImg = await shrink(t.files[0]); prev(pendImg); } catch (x) { toast("사진을 읽지 못했습니다. JPG나 PNG로 올려주세요"); } }
@@ -510,8 +685,8 @@ document.addEventListener("change", async e => {
 });
 const grow = el => { el.style.height = "auto"; el.style.height = el.scrollHeight + "px"; };
 let pvT; document.addEventListener("input", e => { if (e.target.classList && e.target.classList.contains("note")) grow(e.target); if (e.target.id === "f-name") { clearTimeout(pvT); pvT = setTimeout(() => { if (!pendImg) prev(""); }, 650); } });
-document.addEventListener("keydown", e => { if (e.key === "Escape") return closeSheet(); if (view === "plan" && sY >= 1 && !/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)) { if (e.key === "ArrowRight") goDay(cur + 1); if (e.key === "ArrowLeft") goDay(cur - 1); } });
-$("#scrim").addEventListener("click", closeSheet);
+document.addEventListener("keydown", e => { if (e.key === "Enter" && e.target.id === "ag-in" && !e.shiftKey) { e.preventDefault(); return runAgent(); } if (e.key === "Escape") { closeAgent(); return closeSheet(); } if (view === "plan" && sY >= 1 && !/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)) { if (e.key === "ArrowRight") goDay(cur + 1); if (e.key === "ArrowLeft") goDay(cur - 1); } });
+$("#scrim").addEventListener("click", () => { closeSheet(); closeAgent(); });
 (() => { const g = $("#grip"), sh = $("#sheet"); let y0 = 0, on = 0; g.addEventListener("pointerdown", e => { on = 1; y0 = e.clientY; g.setPointerCapture(e.pointerId); }); g.addEventListener("pointermove", e => { if (on) { const dy = Math.max(0, e.clientY - y0); sh.style.transform = `translateY(${dy}px)`; sY = dy / sh.offsetHeight / 1.1; } }); const up = e => { if (!on) return; on = 0; e.clientY - y0 > 110 ? closeSheet() : tween(sY, 0, {}, v => { sY = v; sh.style.transform = `translateY(${v * 110}%)`; }); }; g.addEventListener("pointerup", up); g.addEventListener("pointercancel", up); })();
 bindHeroSwipe();
 window.addEventListener("hashchange", route);
