@@ -321,7 +321,8 @@ const AREA = {d1: "Hakata Station", d2: "Tenjin, Fukuoka", d3: "Beppu, Oita", d4
 
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
 const esc = v => String(v ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const won = x => Math.round(x).toLocaleString("ko-KR") + "원";
+const manNum = x => (Math.round(x / 1000) / 10).toLocaleString("ko-KR", {maximumFractionDigits: 1});
+const won = x => Math.abs(x) >= 10000 ? manNum(x) + "만원" : Math.round(x).toLocaleString("ko-KR") + "원";
 const uid = () => Math.random().toString(36).slice(2, 9);
 const httpsOk = u => /^https:\/\//.test(u || "");
 const imgOk = u => /^(https:\/\/|data:image\/)/.test(u || "");
@@ -411,8 +412,8 @@ function heroBody() {
       tiles: [["일정", d.items.length + "개"], ["장소", places + "곳"], ["숙소", d.hotel ? d.hotel.replace("호텔 ", "").split(" ")[0] : "귀국"]]};
   }
   if (view === "budget") {
-    const L = ledger(), man = v => (Math.round(v / 1000) / 10).toLocaleString("ko-KR") + "만";
-    return {big: null, left: L.total, cap: `둘이 쓴 돈 · 예산 ${Math.round(S.total / 10000)}만 원 중 ${(L.total / S.total * 100).toFixed(0)}%`, tiles: [[L.A, man(L.useA)], [L.B, man(L.useB)], ["공용", man(L.shared)]]};
+    const L = ledger(), man = v => manNum(v) + "만";
+    return {big: null, left: L.total / 2, cap: `1인당 · 예산 ${manNum(S.total / 2)}만원 중 ${(L.total / S.total * 100).toFixed(0)}%`, tiles: [[L.A, man(L.useA)], [L.B, man(L.useB)], ["공용", man(L.shared)]]};
   }
   const done = S.todos.filter(t => t.done).length;
   return {big: `${done}<small>/${S.todos.length}</small>`, cap: "정한 것", tiles: [["남음", S.todos.length - done + "개"], ["출발까지", dday()], ["기록", S.expenses.length + "건"]]};
@@ -420,12 +421,12 @@ function heroBody() {
 function dday() { const now = new Date(), t = new Date(now.getFullYear(), now.getMonth(), now.getDate()), d = Math.round((new Date(2026, 10, 29) - t) / 864e5); return d > 0 ? d + "일" : d > -6 ? "여행 중" : "완료"; }
 function drawHero(animNum) {
   const h = heroBody();
-  $("#big").classList.toggle("money", h.big === null); $("#big").innerHTML = h.big !== null ? h.big : esc(Math.round(h.left / 1000).toLocaleString("ko-KR")) + "<small>천원</small>";
+  $("#big").classList.toggle("money", h.big === null); $("#big").innerHTML = h.big !== null ? h.big : esc(manNum(h.left)) + "<small>만원</small>";
   $("#cap").textContent = h.cap;
   $("#tiles").innerHTML = h.tiles.map(t => `<div class="tile"><span>${esc(t[0])}</span><b>${esc(t[1])}</b></div>`).join("");
   $(".arc").style.display = view === "plan" ? "" : "none";
   $("#dots").innerHTML = view === "plan" ? S.days.map((d, i) => `<i class="${i === cur ? "on" : ""}"></i>`).join("") : "";
-  if (view === "budget") { const to = h.left, from = lastLeft === null ? 0 : lastLeft; lastLeft = to; tween(from, to, {stiffness: 110, damping: 24}, v => { $("#big").innerHTML = Math.round(v / 1000).toLocaleString("ko-KR") + "<small>천원</small>"; }); }
+  if (view === "budget") { const to = h.left, from = lastLeft === null ? 0 : lastLeft; lastLeft = to; tween(from, to, {stiffness: 110, damping: 24}, v => { $("#big").innerHTML = manNum(v) + "<small>만원</small>"; }); }
   if (animNum && MO && !RM) MO.animate("#big", {y: [animNum * 24, 0], opacity: [0, 1]}, {type: "spring", stiffness: 260, damping: 26});
   setPhoto();
 }
@@ -473,7 +474,7 @@ function budgetMain() {
       <div class="card"><b style="font-size:15px">둘이 같이 쓰기</b><p class="sv" style="margin-top:4px">각자 기록한 뒤 "내 기록 보내기"로 복사해 카톡으로 보내고, 받은 쪽은 "받은 기록 합치기"에 붙여넣으면 겹치지 않게 합쳐져요.</p><div class="row" style="justify-content:flex-start"><button class="btn soft" id="sync-out">내 기록 보내기</button><button class="btn soft" id="sync-in">받은 기록 합치기</button></div><textarea class="in" id="sync-box" placeholder="받은 기록을 여기에 붙여넣고 다시 '받은 기록 합치기'를 누르세요" style="display:none;min-height:80px;margin-top:10px;font-size:12px"></textarea></div>`;
   }
   else body = S.budget.map(b => { const s = spent(b), p = b.amt ? s / b.amt : 0, over = p > 1;
-    return `<div class="card"><div class="ch"><div><b>${esc(b.cat)}</b><small>예산 ${won(b.amt)}</small></div><span class="t">${Math.round(s / 1000).toLocaleString()}<span style="font-size:14px;margin-left:2px">천원</span></span></div>
+    return `<div class="card"><div class="ch"><div><b>${esc(b.cat)}</b><small>예산 ${won(b.amt)}</small></div><span class="t">${manNum(s)}<span style="font-size:14px;margin-left:2px">만원</span></span></div>
       <div class="gauge"><i style="width:${Math.min(100, p * 100).toFixed(1)}%"></i><u style="left:${Math.min(100, p * 100).toFixed(1)}%"></u></div><div class="scale"><span>0</span><span>${won(b.amt)}</span></div>
       <div class="foot">${b.fixed ? `<label class="chk"><input type="checkbox" data-paid="${b.id}"${b.paid ? " checked" : ""}>결제 완료 (공용으로 반반)</label>` : `<span>${(p * 100).toFixed(0)}% 사용</span>`}<span class="st"><i style="background:${over ? "var(--warn)" : "var(--ok)"}"></i>${over ? "초과" : "여유"}</span></div></div>`; }).join("");
   return `<h2>예산 관리</h2><div class="tabs" id="tabs"><span class="ind"></span><button data-btab="add" class="${bTab === "add" ? "on" : ""}">기록</button><button data-btab="list" class="${bTab === "list" ? "on" : ""}">내역·정산</button><button data-btab="cats" class="${bTab === "cats" ? "on" : ""}">항목별</button></div><div id="tb">${body}</div>`;
