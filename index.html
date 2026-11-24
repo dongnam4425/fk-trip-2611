@@ -63,6 +63,19 @@ h2{font-size:19px;font-weight:600;margin:10px 0 12px;letter-spacing:-.01em}
 .tabs button.on{color:var(--ink)}
 .tabs .ind{background:#fff;box-shadow:0 1px 4px rgba(15,17,21,.08)}
 .card{background:var(--card);border-radius:22px;padding:16px;margin-top:12px}
+.card.it{display:grid;grid-template-columns:56px minmax(0,1fr) auto;gap:12px;align-items:center;padding:10px 14px 10px 10px;border-radius:18px;margin-top:8px}
+.th{position:relative;width:56px;height:56px;border-radius:14px;overflow:hidden;background:#e2e7ee;display:grid;place-items:center;color:var(--sub);border:0;padding:0}
+.th img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.th iframe{position:absolute;left:-70px;top:-70px;width:196px;height:196px;border:0;pointer-events:none}
+.th.add svg{width:20px;height:20px}
+.th.ic{background:#fff;color:var(--ink)}
+.mid{border:0;background:none;text-align:left;padding:0;display:block;min-width:0}
+.mid b{display:block;font-weight:600;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mid small{display:block;color:var(--sub);font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mid small.cr{font-size:10.5px;color:#a3a9b3}
+.mid small.cr:empty{display:none}
+.card.it .t{font:400 20px/1 "Inter",sans-serif;letter-spacing:-.02em;white-space:nowrap;font-variant-numeric:tabular-nums}
+.card.it .t.w{font-size:13.5px;font-weight:500;color:var(--sub)}
 .ch{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
 .ch b{font-weight:600;font-size:15.5px;display:block}
 .ch small{display:block;color:var(--sub);font-size:13px;margin-top:1px}
@@ -71,7 +84,9 @@ h2{font-size:19px;font-weight:600;margin:10px 0 12px;letter-spacing:-.01em}
 .gm{position:relative;display:block;margin-top:12px;height:150px;border-radius:16px;overflow:hidden;background:#e2e7ee}
 .gm iframe{position:absolute;inset:-40px 0;width:100%;height:calc(100% + 80px);border:0;pointer-events:none}
 .gm img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.gm a{position:absolute;inset:0}
+.gm>a{position:absolute;inset:0}
+.gm .by{position:absolute;right:8px;bottom:8px;z-index:2;font-size:10.5px;color:#fff;background:rgba(0,0,0,.45);border-radius:999px;padding:3px 8px;max-width:80%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gm .by a{color:#fff;text-decoration:none}
 .foot{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:10px;font-size:12.5px;color:var(--sub)}
 .foot .st{display:inline-flex;align-items:center;gap:6px;color:var(--ink)}
 .foot .st i{width:7px;height:7px;border-radius:50%;background:var(--ok)}
@@ -194,6 +209,55 @@ const PHOTO = {
   d5: ["FukuokaTenjin.JPG", "R34SkylineGT-R V-SpecⅡNür", "텐진 솔라리아 스테이지"],
   d6: ["Fukuoka Seaside Momochi Aerial Shoot.jpg", "Chihaya Sta", "후쿠오카공항 착륙 중 본 모모치"]
 };
+const PLACE_PHOTO = {
+  "인천국제공항": ["Incheon International Airport Terminal 1 Departure.jpg", "Arne Müseler"],
+  "후쿠오카공항 국제선": ["Fukuoka Airport international terminal.jpg", "Muyo"],
+  "하카타역": ["JR Hakata City 2011 Jan.jpg", "ぱちょぴ"],
+  "벳푸역": ["East entrance of Beppu Station 20160218-2.JPG", "そらみみ (Soramimi)"]
+};
+const GP = {};
+let gKey = ""; try { gKey = localStorage.getItem("fk4-gkey") || ""; } catch (e) {}
+let gLib = null;
+function loadPlaces() {
+  if (!gKey) return Promise.resolve(null);
+  if (gLib) return gLib;
+  gLib = new Promise(res => {
+    window.__gmReady = async () => { try { res(await google.maps.importLibrary("places")); } catch (e) { res(null); } };
+    window.gm_authFailure = () => { toast("구글 API 키가 거부됐습니다. 키와 사용 설정을 확인해주세요"); res(null); };
+    const sc = document.createElement("script"); sc.async = true; sc.onerror = () => res(null);
+    sc.src = "https://maps.googleapis.com/maps/api/js?key=" + encodeURIComponent(gKey) + "&v=weekly&loading=async&language=ko&callback=__gmReady";
+    document.head.appendChild(sc);
+  });
+  return gLib;
+}
+async function googlePhoto(p) {
+  const k = p.q || p.name; if (GP[k] !== undefined) return GP[k];
+  GP[k] = null; const lib = await loadPlaces(); if (!lib) return null;
+  try {
+    const {places} = await lib.Place.searchByText({textQuery: k, fields: ["displayName", "photos"], maxResultCount: 1, language: "ko"});
+    const ph = places && places[0] && places[0].photos && places[0].photos[0];
+    if (ph) { const at = (ph.authorAttributions || []).map(a => a.displayName).filter(Boolean).join(", "); GP[k] = {url: ph.getURI({maxWidth: 900}), by: at ? "Google 지도 · " + at : "Google 지도"}; }
+  } catch (e) { GP[k] = null; }
+  return GP[k];
+}
+function hydratePhotos() {
+  if (!gKey) return;
+  $$(".th[data-pk]").forEach(async el => {
+    const it = S.days[cur].items.find(x => x.id === el.dataset.pk); if (!it || !it.place || imgOk(it.place.img)) return;
+    const r = await googlePhoto(it.place); if (!r || !el.isConnected) return;
+    const im = new Image(); im.alt = it.place.name + " 대표 사진"; im.style.opacity = 0; im.style.transition = "opacity .5s"; im.onload = () => { im.style.opacity = 1; }; im.src = r.url;
+    el.innerHTML = ""; el.appendChild(im);
+    const cr = document.querySelector(`[data-cr="${it.id}"]`); if (cr) cr.textContent = "사진 " + r.by;
+  });
+}
+function photoHTML(p) {
+  if (imgOk(p.img)) return `<img src="${esc(p.img)}" alt="${esc(p.name)}">`;
+  const c = PLACE_PHOTO[p.name];
+  if (c && !(gKey && GP[p.q || p.name])) return `<img src="${esc(FP(c[0]).replace("width=1000", "width=240"))}" alt="${esc(p.name)} 사진" loading="lazy">`;
+  const g = gKey && GP[p.q || p.name];
+  if (g) return `<img src="${esc(g.url)}" alt="${esc(p.name)} 대표 사진">`;
+  return frame(p.q || p.name, 16, true);
+}
 const AREA = {d1: "Hakata Station", d2: "Tenjin, Fukuoka", d3: "Beppu, Oita", d4: "Beppu Station", d5: "Daimyo, Fukuoka", d6: "Fukuoka Airport"};
 
 const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
@@ -225,6 +289,7 @@ const I = {
   home: '<svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 2.6 21.4 9.4l-3.6 11.1H6.2L2.6 9.4Z"/></svg>',
   wal: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2" stroke-linecap="round"/></svg>',
   chk: '<svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 22a2.5 2.5 0 0 0 2.4-2h-4.8a2.5 2.5 0 0 0 2.4 2Zm7-6V11a7 7 0 0 0-5.5-6.8V3.5a1.5 1.5 0 0 0-3 0v.7A7 7 0 0 0 5 11v5l-2 2v1h18v-1Z"/></svg>',
+  bed: '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 18V7M3 14h18v4M21 14v-2a3 3 0 0 0-3-3h-7v5"/><circle cx="7" cy="11" r="2"/></svg>',
   plus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
   out: '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M8 16 16 8M9 8h7v7"/></svg>'
 };
@@ -281,16 +346,15 @@ function drawHero(animNum) {
 
 /* ---------- main sections ---------- */
 function itemCard(it) {
-  const p = it.place, timeLike = /^\d/.test(it.t);
-  const map = p ? `<div class="gm">${imgOk(p.img) ? `<img src="${esc(p.img)}" alt="${esc(p.name)}">` : frame(p.q || p.name, 16, true)}<a href="${esc(gmap(p))}" target="_blank" rel="noopener" aria-label="${esc(p.name)} 구글맵에서 열기"></a></div>
-    <div class="foot"><span class="st"><i></i>${esc(p.name)}</span><a class="go" href="${esc(gmap(p))}" target="_blank" rel="noopener">구글맵 ${I.out}</a></div>` : `<div class="foot"><button class="lk" data-ed="${esc(it.id)}">구글맵 장소 붙이기</button></div>`;
-  return `<div class="card" data-it="${esc(it.id)}"><div class="ch"><div><b>${esc(it.txt)}</b>${it.sub ? `<small>${esc(it.sub)}</small>` : ""}${p && p.memo ? `<small>${esc(p.memo)}</small>` : ""}</div><span class="t${timeLike ? "" : " w"}">${esc(it.t)}</span></div>${map}
-    <div class="row" style="margin-top:4px;justify-content:flex-end"><button class="lk" data-ed="${esc(it.id)}">편집</button></div></div>`;
+  const p = it.place, timeLike = /^\d/.test(it.t), c = p && PLACE_PHOTO[p.name];
+  const credit = p ? (imgOk(p.img) ? "" : c ? `사진 ${c[1]} · Wikimedia` : "") : "";
+  const th = p ? `<a class="th" data-pk="${esc(it.id)}" href="${esc(gmap(p))}" target="_blank" rel="noopener" aria-label="${esc(p.name)} 구글맵에서 열기">${photoHTML(p)}</a>` : `<button class="th add" data-ed="${esc(it.id)}" aria-label="구글맵 장소 붙이기">${I.plus}</button>`;
+  return `<div class="card it" data-it="${esc(it.id)}">${th}<button class="mid" data-ed="${esc(it.id)}"><b>${esc(it.txt)}</b><small>${esc(p ? p.name + (it.sub ? " · " + it.sub : "") : it.sub || "장소 없음")}</small>${p ? `<small class="cr" data-cr="${esc(it.id)}">${esc(credit)}</small>` : ""}</button><span class="t${timeLike ? "" : " w"}">${esc(it.t)}</span></div>`;
 }
 function planMain() {
   const d = S.days[cur], places = d.items.filter(x => x.place);
   let body = "";
-  if (tab === "list") body = `<div class="card stay"><div class="ch"><div><b>${esc(d.hotel || "집으로 돌아가는 날")}</b><small>${esc(d.room || "숙박 없음")}</small></div><span class="t w">숙소</span></div></div>` + (d.items.map(itemCard).join("") || '<p class="empty">아직 비어 있어요. 아래 + 버튼으로 일정을 넣어보세요.</p>');
+  if (tab === "list") body = `<div class="card it stay"><span class="th ic">${I.bed}</span><div class="mid"><b>${esc(d.hotel || "집으로 돌아가는 날")}</b><small>${esc(d.room || "숙박 없음")}</small></div><span class="t w">숙소</span></div>` + (d.items.map(itemCard).join("") || '<p class="empty">아직 비어 있어요. 아래 + 버튼으로 일정을 넣어보세요.</p>');
   else if (tab === "map") { const f = places.find(x => x.id === mapFocus) || places[0]; body = places.length ? `<div class="bigmap">${frame(f.place.q || f.place.name, 15)}</div><div class="pills">${places.map(x => `<button class="pill${x === f ? " on" : ""}" data-mf="${esc(x.id)}">${esc(x.t)} ${esc(x.place.name)}</button>`).join("")}</div>` : `<div class="bigmap">${frame(AREA[d.id], 14)}</div><p class="empty">일정에 구글맵 장소를 붙이면 여기서 바로 옮겨 다니며 볼 수 있어요.</p>`; }
   else body = `<div class="card"><label class="lbl" for="memo" style="margin-top:0">${+d.date.slice(5, 7)}월 ${+d.date.slice(8)}일 메모</label><textarea class="in" id="memo" placeholder="둘이 나눠 볼 메모">${esc(d.note)}</textarea><div class="row" style="justify-content:flex-end"><button class="btn" id="memoSave">메모 저장</button></div></div>`;
   return `<h2>오늘 일정</h2><div class="tabs" id="tabs"><span class="ind"></span><button data-tab="list" class="${tab === "list" ? "on" : ""}">시간표</button><button data-tab="map" class="${tab === "map" ? "on" : ""}">지도</button><button data-tab="memo" class="${tab === "memo" ? "on" : ""}">메모</button></div><div id="tb">${body}</div>`;
@@ -311,12 +375,16 @@ function budgetMain() {
 function todoMain() {
   return `<h2>정할 것</h2><div class="card" style="padding:4px 16px">${S.todos.map(t => `<label class="todo${t.done ? " done" : ""}"><input type="checkbox" data-todo="${esc(t.id)}"${t.done ? " checked" : ""}><span>${esc(t.txt)}</span></label>`).join("")}</div>
     <div class="row" style="flex-wrap:nowrap"><input class="in" id="todo-new" placeholder="정할 것 추가"><button class="btn" id="todo-add">추가</button></div>
+    <h2 style="margin-top:28px">장소 대표 사진</h2><div class="card"><p style="margin:0;color:var(--sub);font-size:13.5px">호텔·식당의 구글 대표 사진을 띄우려면 Google 지도 API 키가 필요해요. 키는 이 브라우저에만 저장되고 사이트 코드에는 들어가지 않아요. 키가 없으면 공항·역은 위키미디어 사진, 나머지는 지도로 보여요.</p>
+      <label class="lbl" for="gkey">Google 지도 API 키</label><input class="in" id="gkey" value="${esc(gKey)}" placeholder="AIza..." autocomplete="off" spellcheck="false">
+      <div class="row"><span style="font-size:12.5px;color:var(--sub)">Maps JavaScript API와 Places API (New)를 켜야 해요</span><button class="btn" id="gkeySave">저장</button></div></div>
     <h2 style="margin-top:28px">데이터</h2><div class="card"><p style="margin:0;color:var(--sub);font-size:13.5px">일정, 메모, 지출은 이 브라우저에 저장돼요. 다른 기기로 옮길 땐 백업 파일을 쓰세요.</p><div class="row" style="justify-content:flex-start"><button class="btn soft" id="bk-out">백업 내려받기</button><span class="file"><label class="btn soft" for="bk-in" style="display:inline-flex;align-items:center;cursor:pointer">백업 불러오기</label><input type="file" id="bk-in" accept="application/json"></span></div></div>`;
 }
 function drawMain(anim) {
   const m = $("#main"); m.innerHTML = view === "plan" ? planMain() : view === "budget" ? budgetMain() : todoMain();
   requestAnimationFrame(() => { const tb = $("#tabs"); if (tb) moveInd(tb.querySelector(".ind"), tb.querySelector("button.on"), anim !== "tab"); });
   if (anim) enter($$("#tb > *, #main > .card"), .045, 16);
+  if (view === "plan" && tab === "list") hydratePhotos();
 }
 function moveInd(ind, el, instant) {
   if (!ind || !el) return; const to = {l: el.offsetLeft, t: el.offsetTop, w: el.offsetWidth, h: el.offsetHeight}, from = ind._p || to; ind._p = to;
@@ -409,6 +477,7 @@ document.addEventListener("click", e => {
   if (d.dx) { const snap = clone(S); S.expenses = S.expenses.filter(x => x.id !== d.dx); drawAll(); return save("지출을 지웠습니다", snap); }
   if (t.id === "x-add") { const a = parseFloat($("#x-amt").value.replace(/[^\d.]/g, "")); if (!(a > 0)) return $("#x-amt").focus(); S.expenses.push({id: uid(), cat: $("#x-cat").value, day: $("#x-day").value, amount: a, cur: ($("#x-cur .on") || {dataset: {}}).dataset.cur || "JPY", memo: $("#x-memo").value.trim()}); bTab = "list"; drawAll(); return save("지출을 기록했습니다"); }
   if (t.id === "todo-add") { const v = $("#todo-new").value.trim(); if (!v) return $("#todo-new").focus(); S.todos.push({id: uid(), txt: v, done: false}); drawAll(); return save("추가했습니다"); }
+  if (t.id === "gkeySave") { gKey = $("#gkey").value.trim(); try { gKey ? localStorage.setItem("fk4-gkey", gKey) : localStorage.removeItem("fk4-gkey"); } catch (x) {} gLib = null; Object.keys(GP).forEach(k => delete GP[k]); return toast(gKey ? "키를 저장했습니다. 일정 탭에서 사진을 불러옵니다" : "키를 지웠습니다"); }
   if (t.id === "bk-out") { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([JSON.stringify(S)], {type: "application/json"})); a.download = "fukuoka-trip-backup.json"; a.click(); return toast("백업 파일을 내려받았습니다"); }
   if (t.id === "f-close") return closeSheet();
   if (t.id === "f-noimg") { pendImg = ""; return prev(""); }
