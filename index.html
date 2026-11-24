@@ -27,11 +27,11 @@ button{cursor:pointer;-webkit-tap-highlight-color:transparent}
 @media(min-width:520px){#root{display:grid;place-items:center}.app{width:430px;height:min(932px,calc(100dvh - 40px));border-radius:52px;box-shadow:0 0 0 10px #111,0 0 0 12px #cfd4db,0 40px 90px -40px rgba(20,30,60,.5)}}
 .scroll{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;scrollbar-width:none;padding-bottom:110px}
 .scroll::-webkit-scrollbar{display:none}
-.hero{position:relative;color:#fff;padding:calc(18px + env(safe-area-inset-top,0px)) 20px 26px;overflow:hidden;touch-action:pan-y}
+.hero{position:relative;color:#fff;padding:calc(18px + env(safe-area-inset-top,0px)) 20px 84px;overflow:hidden;touch-action:pan-y}
 .ph{position:absolute;inset:0;z-index:0}
-.ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:opacity .7s;-webkit-mask-image:linear-gradient(#000 62%,transparent 100%);mask-image:linear-gradient(#000 62%,transparent 100%)}
-.ph::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,10,16,.5) 0%,rgba(8,10,16,.22) 34%,rgba(8,10,16,.28) 58%,rgba(8,10,16,0) 80%)}
-.hero.plain .ph{background:linear-gradient(180deg,#2a2f3a 0%,#59606d 60%,#fff 100%)}
+.ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:opacity .7s;-webkit-mask-image:linear-gradient(180deg,#000 0%,#000 48%,rgba(0,0,0,.82) 58%,rgba(0,0,0,.55) 68%,rgba(0,0,0,.28) 77%,rgba(0,0,0,.1) 84%,rgba(0,0,0,.02) 89%,transparent 92%);mask-image:linear-gradient(180deg,#000 0%,#000 48%,rgba(0,0,0,.82) 58%,rgba(0,0,0,.55) 68%,rgba(0,0,0,.28) 77%,rgba(0,0,0,.1) 84%,rgba(0,0,0,.02) 89%,transparent 92%)}
+.ph::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,10,16,.5) 0%,rgba(8,10,16,.24) 30%,rgba(8,10,16,.2) 50%,rgba(8,10,16,.08) 64%,rgba(8,10,16,0) 74%)}
+.hero.plain .ph{background:linear-gradient(180deg,#2a2f3a 0%,#59606d 45%,#c9ccd2 72%,#fff 92%)}
 .hero.plain .ph::after{display:none}
 .hero>*:not(.ph){position:relative;z-index:1}
 .arc{position:relative;height:66px;margin:0 -20px}
@@ -56,9 +56,9 @@ button{cursor:pointer;-webkit-tap-highlight-color:transparent}
 .dots{display:flex;justify-content:center;gap:5px;margin-top:12px}
 .dots i{width:5px;height:5px;border-radius:50%;background:rgba(15,17,21,.18)}
 .dots i.on{background:#fff;box-shadow:0 0 0 1px rgba(0,0,0,.06)}
-.credit{text-align:center;font-size:11px;color:#8a919c;margin-top:10px}
+.credit{text-align:center;font-size:11px;color:rgba(255,255,255,.75);margin-top:10px;text-shadow:0 1px 6px rgba(0,0,0,.4)}
 .credit a{color:inherit}
-.main{padding:6px 20px 0}
+.main{padding:0 20px 0;margin-top:-30px;position:relative}
 h2{font-size:19px;font-weight:600;margin:10px 0 12px;letter-spacing:-.01em}
 .tabs{position:relative;display:flex;background:var(--card);border-radius:999px;padding:4px}
 .tabs button{position:relative;z-index:1;flex:1;border:0;background:none;padding:9px 0;border-radius:999px;color:var(--sub);font-weight:500;font-size:14.5px;transition:color .25s}
