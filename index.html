@@ -63,19 +63,23 @@ h2{font-size:19px;font-weight:600;margin:10px 0 12px;letter-spacing:-.01em}
 .tabs button.on{color:var(--ink)}
 .tabs .ind{background:#fff;box-shadow:0 1px 4px rgba(15,17,21,.08)}
 .card{background:var(--card);border-radius:22px;padding:16px;margin-top:12px}
-.card.it{display:grid;grid-template-columns:56px minmax(0,1fr) auto;gap:12px;align-items:center;padding:10px 14px 10px 10px;border-radius:18px;margin-top:8px}
-.th{position:relative;width:56px;height:56px;border-radius:14px;overflow:hidden;background:#e2e7ee;display:grid;place-items:center;color:var(--sub);border:0;padding:0}
+.card.it{display:grid;grid-template-columns:76px minmax(0,1fr) auto;gap:4px 14px;align-items:center;padding:12px 16px 12px 12px;border-radius:20px;margin-top:10px}
+.note{grid-column:1/-1;margin-top:8px;width:100%;border:0;border-radius:12px;background:#fff;padding:8px 12px;font-size:13.5px;line-height:1.45;resize:none;overflow:hidden;min-height:36px;color:var(--ink)}
+.note::placeholder{color:#a9afb8}
+.note:focus{outline:0;box-shadow:0 0 0 1.5px var(--ink)}
+.th{position:relative;width:76px;height:76px;border-radius:16px;overflow:hidden;background:#e2e7ee;display:grid;place-items:center;color:var(--sub);border:0;padding:0}
 .th img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.th iframe{position:absolute;left:-70px;top:-70px;width:196px;height:196px;border:0;pointer-events:none}
+.th iframe{position:absolute;left:-62px;top:-62px;width:200px;height:200px;border:0;pointer-events:none}
 .th.add svg{width:20px;height:20px}
-.th.ic{background:#fff;color:var(--ink)}
+.th.ic{background:#fff;color:var(--ink);width:52px;height:52px;margin-left:12px}
+.card.it.stay{grid-template-columns:76px minmax(0,1fr) auto}
 .mid{border:0;background:none;text-align:left;padding:0;display:block;min-width:0}
-.mid b{display:block;font-weight:600;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.mid small{display:block;color:var(--sub);font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mid b{display:block;font-weight:600;font-size:16px;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mid small{display:block;color:var(--sub);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .mid small.cr{font-size:10.5px;color:#a3a9b3}
 .mid small.cr:empty{display:none}
-.card.it .t{font:400 20px/1 "Inter",sans-serif;letter-spacing:-.02em;white-space:nowrap;font-variant-numeric:tabular-nums}
-.card.it .t.w{font-size:13.5px;font-weight:500;color:var(--sub)}
+.card.it .t{font:400 24px/1 "Inter",sans-serif;letter-spacing:-.02em;white-space:nowrap;font-variant-numeric:tabular-nums}
+.card.it .t.w{font-size:14px;font-weight:500;color:var(--sub)}
 .ch{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}
 .ch b{font-weight:600;font-size:15.5px;display:block}
 .ch small{display:block;color:var(--sub);font-size:13px;margin-top:1px}
@@ -349,7 +353,7 @@ function itemCard(it) {
   const p = it.place, timeLike = /^\d/.test(it.t), c = p && PLACE_PHOTO[p.name];
   const credit = p ? (imgOk(p.img) ? "" : c ? `사진 ${c[1]} · Wikimedia` : "") : "";
   const th = p ? `<a class="th" data-pk="${esc(it.id)}" href="${esc(gmap(p))}" target="_blank" rel="noopener" aria-label="${esc(p.name)} 구글맵에서 열기">${photoHTML(p)}</a>` : `<button class="th add" data-ed="${esc(it.id)}" aria-label="구글맵 장소 붙이기">${I.plus}</button>`;
-  return `<div class="card it" data-it="${esc(it.id)}">${th}<button class="mid" data-ed="${esc(it.id)}"><b>${esc(it.txt)}</b><small>${esc(p ? p.name + (it.sub ? " · " + it.sub : "") : it.sub || "장소 없음")}</small>${p ? `<small class="cr" data-cr="${esc(it.id)}">${esc(credit)}</small>` : ""}</button><span class="t${timeLike ? "" : " w"}">${esc(it.t)}</span></div>`;
+  return `<div class="card it" data-it="${esc(it.id)}">${th}<button class="mid" data-ed="${esc(it.id)}"><b>${esc(it.txt)}</b><small>${esc(p ? p.name + (it.sub ? " · " + it.sub : "") : it.sub || "장소 없음")}</small>${p ? `<small class="cr" data-cr="${esc(it.id)}">${esc(credit)}</small>` : ""}</button><span class="t${timeLike ? "" : " w"}">${esc(it.t)}</span><textarea class="note" data-note="${esc(it.id)}" rows="1" placeholder="메모 남기기" aria-label="${esc(it.txt)} 메모">${esc(it.note || "")}</textarea></div>`;
 }
 function planMain() {
   const d = S.days[cur], places = d.items.filter(x => x.place);
@@ -384,7 +388,7 @@ function drawMain(anim) {
   const m = $("#main"); m.innerHTML = view === "plan" ? planMain() : view === "budget" ? budgetMain() : todoMain();
   requestAnimationFrame(() => { const tb = $("#tabs"); if (tb) moveInd(tb.querySelector(".ind"), tb.querySelector("button.on"), anim !== "tab"); });
   if (anim) enter($$("#tb > *, #main > .card"), .045, 16);
-  if (view === "plan" && tab === "list") hydratePhotos();
+  if (view === "plan" && tab === "list") { hydratePhotos(); $$(".note").forEach(grow); }
 }
 function moveInd(ind, el, instant) {
   if (!ind || !el) return; const to = {l: el.offsetLeft, t: el.offsetTop, w: el.offsetWidth, h: el.offsetHeight}, from = ind._p || to; ind._p = to;
@@ -499,11 +503,13 @@ document.addEventListener("change", async e => {
   const t = e.target, d = t.dataset;
   if (d.todo) { S.todos.find(x => x.id === d.todo).done = t.checked; drawAll(); return save(t.checked ? "정했습니다" : "다시 정할 것으로 돌렸습니다"); }
   if (d.paid) { S.budget.find(x => x.id === d.paid).paid = t.checked; drawAll(); return save("예산에 반영했습니다"); }
+  if (d.note) { const it = S.days[cur].items.find(x => x.id === d.note); if (it) { it.note = t.value.trim(); save("메모를 저장했습니다"); } return; }
   if (t.id === "rate") { const r = parseFloat(t.value); if (r > 0) { S.rate = r; drawHero(); save("환율을 바꿨습니다"); } return; }
   if (t.id === "f-img" && t.files[0]) { try { pendImg = await shrink(t.files[0]); prev(pendImg); } catch (x) { toast("사진을 읽지 못했습니다. JPG나 PNG로 올려주세요"); } }
   if (t.id === "bk-in" && t.files[0]) { try { const o = JSON.parse(await t.files[0].text()); if (o.v === 2 && o.days) { S = o; persist(); drawAll(1); toast("백업을 불러왔습니다"); } else toast("이 앱의 백업 파일이 아닙니다"); } catch (x) { toast("파일을 읽지 못했습니다"); } }
 });
-let pvT; document.addEventListener("input", e => { if (e.target.id === "f-name") { clearTimeout(pvT); pvT = setTimeout(() => { if (!pendImg) prev(""); }, 650); } });
+const grow = el => { el.style.height = "auto"; el.style.height = el.scrollHeight + "px"; };
+let pvT; document.addEventListener("input", e => { if (e.target.classList && e.target.classList.contains("note")) grow(e.target); if (e.target.id === "f-name") { clearTimeout(pvT); pvT = setTimeout(() => { if (!pendImg) prev(""); }, 650); } });
 document.addEventListener("keydown", e => { if (e.key === "Escape") return closeSheet(); if (view === "plan" && sY >= 1 && !/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)) { if (e.key === "ArrowRight") goDay(cur + 1); if (e.key === "ArrowLeft") goDay(cur - 1); } });
 $("#scrim").addEventListener("click", closeSheet);
 (() => { const g = $("#grip"), sh = $("#sheet"); let y0 = 0, on = 0; g.addEventListener("pointerdown", e => { on = 1; y0 = e.clientY; g.setPointerCapture(e.pointerId); }); g.addEventListener("pointermove", e => { if (on) { const dy = Math.max(0, e.clientY - y0); sh.style.transform = `translateY(${dy}px)`; sY = dy / sh.offsetHeight / 1.1; } }); const up = e => { if (!on) return; on = 0; e.clientY - y0 > 110 ? closeSheet() : tween(sY, 0, {}, v => { sY = v; sh.style.transform = `translateY(${v * 110}%)`; }); }; g.addEventListener("pointerup", up); g.addEventListener("pointercancel", up); })();
