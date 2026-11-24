@@ -129,6 +129,28 @@ textarea.in{min-height:120px;resize:vertical;line-height:1.55}
 .ex b{font:500 15px "Inter",sans-serif;white-space:nowrap}
 .ex small{display:block;color:var(--sub);font-size:12.5px}
 .x{border:0;background:none;color:var(--sub);min-width:36px;min-height:36px;font-size:18px}
+.sheet.chat{height:88%;display:flex;flex-direction:column;padding-bottom:0;overflow:hidden}
+.chead{display:flex;justify-content:space-between;align-items:center}
+.keyrow{display:flex;gap:8px;margin-top:8px}
+.keyrow .btn{flex:none;white-space:nowrap}
+.log{flex:1;overflow-y:auto;padding:10px 0 12px;display:flex;flex-direction:column;gap:8px;overscroll-behavior:contain}
+.msg{max-width:84%;padding:10px 14px;border-radius:18px;font-size:14.5px;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere}
+.msg.ai{background:var(--card);align-self:flex-start;border-bottom-left-radius:6px}
+.msg.me{background:var(--ink);color:#fff;align-self:flex-end;border-bottom-right-radius:6px}
+.msg.sys{align-self:center;background:none;color:var(--sub);font-size:12px;padding:2px 8px}
+.msg.card-add{align-self:stretch;max-width:100%;display:grid;grid-template-columns:64px minmax(0,1fr) auto;gap:12px;align-items:center;background:#fff;border:1px solid var(--line);white-space:normal}
+.msg.card-add .th{width:64px;height:64px}
+.msg.card-add b{display:block;font-weight:600}.msg.card-add small{display:block;color:var(--sub);font-size:12.5px}
+.msg.card-add .ok{font-size:12px;font-weight:600;color:var(--ok)}
+.typing{display:flex;gap:4px;align-items:center;min-height:40px}
+.typing i{width:6px;height:6px;border-radius:50%;background:#a3a9b3;animation:blink 1s infinite}
+.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
+@keyframes blink{50%{opacity:.25}}
+.composer{display:flex;gap:8px;align-items:flex-end;padding:10px 0 calc(14px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line)}
+.composer .in{min-height:44px;max-height:120px;resize:none;border-radius:22px;padding:11px 16px}
+.composer .mic{width:44px;height:44px;padding:0;justify-content:center;background:var(--card);flex:none}
+.send{width:44px;height:44px;border-radius:50%;border:0;background:var(--ink);color:#fff;display:grid;place-items:center;flex:none}
+.send svg{width:20px;height:20px}
 .agbox{background:var(--card);border-radius:20px;padding:12px;margin-top:12px}
 .agbox .in{background:#fff;border:0;min-height:84px}
 .mic{display:inline-flex;align-items:center;gap:8px;border:0;border-radius:999px;background:#fff;padding:10px 16px;min-height:44px;font-weight:500}
@@ -327,6 +349,7 @@ const I = {
   bed: '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 18V7M3 14h18v4M21 14v-2a3 3 0 0 0-3-3h-7v5"/><circle cx="7" cy="11" r="2"/></svg>',
   cam: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4Z"/><circle cx="12" cy="13" r="3.5"/></svg>',
   mic: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>',
+  send: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>',
   plus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
   out: '<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M8 16 16 8M9 8h7v7"/></svg>'
 };
@@ -463,7 +486,7 @@ function todoMain() {
   return `<h2>정할 것</h2><div class="card" style="padding:4px 16px">${S.todos.map(t => `<label class="todo${t.done ? " done" : ""}"><input type="checkbox" data-todo="${esc(t.id)}"${t.done ? " checked" : ""}><span>${esc(t.txt)}</span></label>`).join("")}</div>
     <div class="row" style="flex-wrap:nowrap"><input class="in" id="todo-new" placeholder="정할 것 추가"><button class="btn" id="todo-add">추가</button></div>
     <h2 style="margin-top:28px">우리 이름</h2><div class="card"><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div><label class="lbl" for="nameA" style="margin-top:0">나</label><input class="in" id="nameA" value="${esc(names()[0])}"></div><div><label class="lbl" for="nameB" style="margin-top:0">여자친구</label><input class="in" id="nameB" value="${esc(names()[1])}"></div></div><p class="sv">예산 화면의 개인별 금액과 정산에 이 이름이 쓰여요.</p></div>
-    <h2 style="margin-top:28px">AI 일정 비서</h2><div class="card"><p style="margin:0;color:var(--sub);font-size:13.5px">+ 버튼으로 말하거나 적으면 일정이 바로 등록돼요. 키가 없어도 "12월 1일 오후 3시 캐널시티 구경" 같은 말은 알아듣고, Claude API 키를 넣으면 더 자유롭게 말해도 돼요. 키는 이 브라우저에만 저장돼요.</p>
+    <h2 style="margin-top:28px">AI 일정 비서</h2><div class="card"><p style="margin:0;color:var(--sub);font-size:13.5px">+ 버튼을 누르면 대화하듯 일정을 정할 수 있어요. Claude API 키를 넣으면 비서가 웹에서 실제 식당·관광지를 찾아 추천하고, 정하면 구글맵과 함께 등록해요(API 사용료는 키 주인 계정에 청구). 키는 이 브라우저에만 저장돼요.</p>
       <label class="lbl" for="akey">Claude API 키</label><input class="in" id="akey" value="${esc(aKey)}" placeholder="sk-ant-..." autocomplete="off" spellcheck="false">
       <div class="row" style="justify-content:flex-end"><button class="btn" id="akeySave">저장</button></div></div>
     <h2 style="margin-top:28px">장소 대표 사진</h2><div class="card"><p style="margin:0;color:var(--sub);font-size:13.5px">호텔·식당의 구글 대표 사진을 띄우려면 Google 지도 API 키가 필요해요. 키는 이 브라우저에만 저장되고 사이트 코드에는 들어가지 않아요. 키가 없으면 공항·역은 위키미디어 사진, 나머지는 지도로 보여요.</p>
@@ -531,45 +554,86 @@ const mins = t => { const m = /^(\d{1,2}):(\d{2})/.exec(t || ""); return m ? +m[
 function placeAt(items, it) { const v = mins(it.t); if (v === null) return items.push(it); const k = items.findIndex(x => mins(x.t) !== null && mins(x.t) > v); k < 0 ? items.push(it) : items.splice(k, 0, it); }
 async function shrink(file) { const u = URL.createObjectURL(file); const im = await new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = no; i.src = u; }); const k = Math.min(1, 640 / Math.max(im.width, im.height)), c = document.createElement("canvas"); c.width = Math.round(im.width * k); c.height = Math.round(im.height * k); c.getContext("2d").drawImage(im, 0, 0, c.width, c.height); URL.revokeObjectURL(u); return c.toDataURL("image/jpeg", .72); }
 
-/* ---------- AI 일정 비서 ---------- */
+/* ---------- AI 여행 비서 (대화형) ---------- */
 let aKey = ""; try { aKey = localStorage.getItem("fk4-akey") || ""; } catch (e) {}
-function localParse(text) {
-  const out = [], parts = text.replace(/\s+/g, " ").split(/\s*(?:그리고|그 다음에|다음에|그다음|,|\n|\.)\s*/).filter(x => x && x.length > 1);
-  let day = cur;
-  for (let seg of parts) {
-    let m;
-    if ((m = seg.match(/(\d{1,2})\s*월\s*(\d{1,2})\s*일/))) { const d = S.days.findIndex(x => +x.date.slice(5, 7) === +m[1] && +x.date.slice(8) === +m[2]); if (d >= 0) day = d; seg = seg.replace(m[0], " "); }
-    else if ((m = seg.match(/(\d)\s*일\s*차|DAY\s*(\d)/i))) { day = Math.min(5, Math.max(0, +(m[1] || m[2]) - 1)); seg = seg.replace(m[0], " "); }
-    else if ((m = seg.match(/(첫|둘|셋|넷|다섯|여섯)\s*(?:째)?\s*날/))) { day = ["첫", "둘", "셋", "넷", "다섯", "여섯"].indexOf(m[1]); seg = seg.replace(m[0], " "); }
-    else if ((m = seg.match(/(?:^|\s)(\d{1,2})\s*일(?!\s*차)/))) { const d = S.days.findIndex(x => +x.date.slice(8) === +m[1]); if (d >= 0) { day = d; seg = seg.replace(m[0], " "); } }
-    else if (/내일/.test(seg)) { day = Math.min(5, cur + 1); seg = seg.replace("내일", " "); }
-    let time = "";
-    if ((m = seg.match(/(\d{1,2}):(\d{2})/))) { time = m[1].padStart(2, "0") + ":" + m[2]; seg = seg.replace(m[0], " "); }
-    else if ((m = seg.match(/(오전|오후|아침|점심|저녁|밤|새벽)?\s*(\d{1,2})\s*시\s*(반|(\d{1,2})\s*분)?/))) {
-      let h = +m[2]; const pm = /오후|저녁|밤/.test(m[1] || "") || (/점심/.test(m[1] || "") && h < 6); if (pm && h < 12) h += 12; if (/오전|새벽|아침/.test(m[1] || "") && h === 12) h = 0;
-      time = String(h).padStart(2, "0") + ":" + (m[3] === "반" ? "30" : String(+(m[4] || 0)).padStart(2, "0")); seg = seg.replace(m[0], " ");
-    } else if ((m = seg.match(/아침|점심|저녁/))) { time = m[0]; }
-    seg = seg.replace(/(일정|추가|등록|해줘|해 줘|넣어줘|넣어 줘|잡아줘|에\s*$)/g, " ").replace(/\s+/g, " ").trim();
-    if (!seg) continue;
-    let place = "", pm2;
-    if ((pm2 = seg.match(/^(.+?)(?:에서|에 가서|가서)\s+(.+)$/))) { place = pm2[1].trim(); }
-    else if ((pm2 = seg.match(/^(.+?)\s*(?:가기|방문|구경|들르기|가보기|에 가기|체크인|체크아웃|에서 밥|식사|먹기)$/))) place = pm2[1].replace(/에$/, "").trim();
-    out.push({day, time: time || "미정", title: seg, place});
-  }
-  return out;
+let chat = [], chatBusy = false;
+function tripContext() {
+  return S.days.map((d, i) => `${i + 1}일차 ${d.date}(${d.wd}) ${d.region} / 숙소: ${d.hotel || "없음(귀국)"}\n` + (d.items.map(it => `  - ${it.t} ${it.txt}${it.place ? " @" + it.place.name : ""}`).join("\n") || "  - (비어 있음)")).join("\n");
 }
-async function claudeParse(text) {
-  const daysTxt = S.days.map((d, i) => `${i + 1}일차 = ${d.date} (${d.wd}), ${d.region}`).join("\n");
-  const r = await fetch("https://api.anthropic.com/v1/messages", {method: "POST", headers: {"content-type": "application/json", "x-api-key": aKey, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true"},
-    body: JSON.stringify({model: "claude-haiku-5-5", max_tokens: 900, system: `후쿠오카·벳푸 여행 일정 앱의 일정 등록 도우미. 사용자의 말을 일정 항목으로 나눠 JSON 배열만 출력한다. 다른 글은 쓰지 않는다.\n여행 날짜:\n${daysTxt}\n지금 보고 있는 날: ${cur + 1}일차 (날짜를 말하지 않으면 이 날)\n각 항목 형식: {"day": 1~6, "time": "HH:MM" 또는 "아침"/"점심"/"저녁"/"미정", "title": "짧은 할 일", "place": "구글맵에서 찾을 장소 이름(일본 장소는 현지 이름이나 영어 병기), 없으면 빈 문자열"}`,
-      messages: [{role: "user", content: text}]})});
-  if (!r.ok) throw new Error(r.status === 401 ? "키가 맞지 않습니다" : "응답 오류 " + r.status);
-  const j = await r.json(), t = (j.content || []).map(c => c.text || "").join(""), a = JSON.parse(t.slice(t.indexOf("["), t.lastIndexOf("]") + 1));
-  return a.filter(x => x && x.title).map(x => ({day: Math.min(5, Math.max(0, (+x.day || cur + 1) - 1)), time: String(x.time || "미정").slice(0, 8), title: String(x.title).slice(0, 60), place: String(x.place || "").slice(0, 60)}));
+const AG_TOOLS = [
+  {type: "web_search_20250305", name: "web_search", max_uses: 6},
+  {name: "add_schedule", description: "여행 일정에 항목을 등록한다. 식당·관광지는 반드시 web_search로 실제 존재하는 곳을 찾은 뒤 정확한 가게 이름으로 등록한다.",
+    input_schema: {type: "object", properties: {
+      day: {type: "integer", description: "1~6 (몇 일차)"}, time: {type: "string", description: "HH:MM 24시간제. 모르면 '점심'/'저녁'/'미정'"},
+      title: {type: "string", description: "짧은 할 일. 예: 이치란 본점에서 라멘"}, place_name: {type: "string", description: "가게/장소 이름 (한국어 표기, 가능하면 현지 이름 괄호 병기)"},
+      maps_query: {type: "string", description: "구글맵 검색어. 현지 가게 이름 + 지역. 예: 一蘭 本社総本店 博多"}, memo: {type: "string", description: "한 줄 메모: 대표 메뉴, 가격대, 영업시간, 예약 필요 여부 등 검색으로 확인한 것"}
+    }, required: ["day", "time", "title"]}}
+];
+function agSystem() {
+  return `너는 동엽과 여자친구의 후쿠오카·벳푸 여행 앱 안에 있는 여행 비서다. 한국어로 짧고 친근하게(존댓말) 대화한다.
+오늘은 ${new Date().toISOString().slice(0, 10)}. 지금 화면에서 보고 있는 날: ${cur + 1}일차.
+현재 일정:
+${tripContext()}
+
+할 일:
+- 사용자가 가고 싶은 곳·먹고 싶은 것을 말하면 web_search로 실제 가게를 찾는다. 그날 숙소나 앞뒤 일정과 가까운 곳, 평이 좋은 곳을 우선한다.
+- 사용자가 특정 가게를 정했거나 "알아서 골라서 넣어줘"라고 하면 바로 add_schedule로 등록한다. 후보만 물어본 경우에는 2~3곳을 한 줄씩 짧게 추천하고 고르게 한다.
+- 날짜·시간이 빠졌으면 앞뒤 일정에 맞게 정하고, 정한 내용을 답에 밝힌다.
+- 등록 후에는 무엇을 언제 넣었는지 한두 문장으로 알려준다. 확인 안 된 정보는 지어내지 않는다.`;
+}
+async function claudeTurn() {
+  for (let step = 0; step < 8; step++) {
+    const r = await fetch("https://api.anthropic.com/v1/messages", {method: "POST", headers: {"content-type": "application/json", "x-api-key": aKey, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true"},
+      body: JSON.stringify({model: "claude-sonnet-5-5", max_tokens: 1600, system: agSystem(), tools: AG_TOOLS, messages: chat.map(m => ({role: m.role, content: m.content}))})});
+    if (!r.ok) { const t = await r.text().catch(() => ""); throw new Error(r.status === 401 ? "Claude 키가 맞지 않습니다" : r.status === 429 ? "요청이 많아 잠시 후 다시 해주세요" : "Claude 응답 오류 " + r.status + " " + t.slice(0, 80)); }
+    const j = await r.json(); chat.push({role: "assistant", content: j.content});
+    const results = [];
+    for (const b of j.content) {
+      if (b.type === "text" && b.text.trim()) bubble("ai", b.text.trim());
+      if (b.type === "server_tool_use" && b.name === "web_search") note("검색 중: " + ((b.input && b.input.query) || ""));
+      if (b.type === "tool_use" && b.name === "add_schedule") { const res = doAdd(b.input || {}); results.push({type: "tool_result", tool_use_id: b.id, content: res}); }
+    }
+    if (results.length) { chat.push({role: "user", content: results}); continue; }
+    if (j.stop_reason === "pause_turn") continue;
+    return;
+  }
+}
+function doAdd(x) {
+  const di = Math.min(5, Math.max(0, (+x.day || cur + 1) - 1));
+  const it = {id: uid(), t: String(x.time || "미정").slice(0, 8), txt: String(x.title || "일정").slice(0, 60), sub: "", note: "", place: x.place_name ? {name: String(x.place_name).slice(0, 60), q: String(x.maps_query || x.place_name).slice(0, 80), url: "", img: "", memo: String(x.memo || "").slice(0, 120)} : null};
+  const snap = clone(S); placeAt(S.days[di].items, it); undo = snap; persist();
+  addedCard(di, it);
+  if (di !== cur) { cur = di; layoutArc(cur); try { history.replaceState(null, "", "#day" + (cur + 1)); } catch (e) {} }
+  tab = "list"; drawHero(); drawMain();
+  return `등록 완료: ${S.days[di].date} ${it.t} ${it.txt}${it.place ? " (" + it.place.name + ")" : ""}`;
+}
+function bubble(who, text) { const box = $("#ag-log"), el = document.createElement("div"); el.className = "msg " + who; el.textContent = text; box.appendChild(el); box.scrollTop = box.scrollHeight; enter([el], 0, 8); }
+function note(text) { const box = $("#ag-log"), el = document.createElement("div"); el.className = "msg sys"; el.textContent = text; box.appendChild(el); box.scrollTop = box.scrollHeight; }
+function addedCard(di, it) {
+  const box = $("#ag-log"), el = document.createElement("div"); el.className = "msg card-add";
+  const d = S.days[di];
+  el.innerHTML = `${it.place ? `<a class="th" href="${esc(gmap(it.place))}" target="_blank" rel="noopener">${photoHTML(it.place)}</a>` : `<span class="th">${I.plus}</span>`}<div><b>${esc(it.txt)}</b><small>${+d.date.slice(5, 7)}/${+d.date.slice(8)} ${esc(it.t)}${it.place ? " · " + esc(it.place.name) : ""}</small>${it.place && it.place.memo ? `<small>${esc(it.place.memo)}</small>` : ""}${it.place ? `<a class="go" href="${esc(gmap(it.place))}" target="_blank" rel="noopener">구글맵에서 보기 ${I.out}</a>` : ""}</div><span class="ok">등록됨</span>`;
+  box.appendChild(el); box.scrollTop = box.scrollHeight; enter([el], 0, 8);
+  if (gKey && it.place) googlePhoto(it.place).then(r => { if (r) { const th = el.querySelector(".th"); th.innerHTML = `<img src="${esc(r.url)}" alt="">`; } });
+}
+function localParse(text) {
+  const out = [], parts = text.replace(/\s+/g, " ").split(/\s*(?:그리고|다음에|,|\n)\s*/).filter(x => x && x.length > 1); let day = cur;
+  for (let seg of parts) { let m, time = "미정";
+    if ((m = seg.match(/(\d{1,2})\s*월\s*(\d{1,2})\s*일/))) { const d = S.days.findIndex(x => +x.date.slice(5, 7) === +m[1] && +x.date.slice(8) === +m[2]); if (d >= 0) day = d; seg = seg.replace(m[0], " "); }
+    else if ((m = seg.match(/(\d)\s*일\s*차/))) { day = Math.min(5, +m[1] - 1); seg = seg.replace(m[0], " "); }
+    else if (/내일/.test(seg)) { day = Math.min(5, cur + 1); seg = seg.replace("내일", " "); }
+    if ((m = seg.match(/(오전|오후|저녁|밤|아침|점심)?\s*(\d{1,2})\s*시\s*(반)?/))) { let h = +m[2]; if (/오후|저녁|밤/.test(m[1] || "") && h < 12) h += 12; time = String(h).padStart(2, "0") + ":" + (m[3] ? "30" : "00"); seg = seg.replace(m[0], " "); }
+    else if ((m = seg.match(/아침|점심|저녁/))) time = m[0];
+    seg = seg.replace(/(일정|추가|등록|해줘|넣어줘|에\s*$)/g, " ").replace(/\s+/g, " ").trim(); if (!seg) continue;
+    const pm = seg.match(/^(.+?)(?:에서|에 가서)\s/) || seg.match(/^(.+?)\s*(?:가기|방문|구경|에서 밥|먹기)$/);
+    out.push({day: day + 1, time, title: seg, place_name: pm ? pm[1] : "", maps_query: pm ? pm[1] : ""});
+  } return out;
 }
 let agY = 1;
 function openAgent() {
-  const ag = $("#agent"); $("#ag-in").value = ""; $("#ag-out").innerHTML = ""; $("#ag-mode").textContent = aKey ? "Claude가 알아들어요" : "기본 해석기 · 설정에서 Claude 키를 넣으면 더 똑똑해져요";
+  const ag = $("#agent"), log = $("#ag-log");
+  if (!log.children.length) bubble("ai", aKey ? "어디 가고 싶으세요? \"1일차 점심에 하카타역 근처 라멘집 찾아서 넣어줘\"처럼 말해주시면 실제 가게를 찾아서 구글맵이랑 같이 등록해둘게요." : "식당을 직접 찾아 등록하려면 Claude API 키가 필요해요. 아래 칸에 키를 넣어주세요. 키 없이도 \"12월 1일 오후 3시 캐널시티 구경\"처럼 정해진 일정은 바로 넣을 수 있어요.");
+  $("#ag-key").style.display = aKey ? "none" : "";
   scrimTo(1); tween(agY, 0, {stiffness: 330, damping: 34}, v => { agY = v; ag.style.transform = `translateY(${v * 110}%)`; });
   setTimeout(() => $("#ag-in").focus({preventScroll: true}), 350);
 }
@@ -580,26 +644,20 @@ function startMic() {
   const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
   if (!SR) return toast("이 브라우저는 음성 입력을 지원하지 않아요. 키보드의 마이크 버튼을 써주세요");
   if (rec) return stopMic();
-  rec = new SR(); rec.lang = "ko-KR"; rec.interimResults = true; rec.continuous = false;
-  const base = $("#ag-in").value ? $("#ag-in").value + " " : "";
-  rec.onresult = e => { let s = ""; for (const r of e.results) s += r[0].transcript; $("#ag-in").value = base + s; };
-  rec.onend = () => { const v = $("#ag-in").value.trim(); stopMic(); if (v) runAgent(); };
+  rec = new SR(); rec.lang = "ko-KR"; rec.interimResults = true;
+  rec.onresult = e => { let s = ""; for (const r of e.results) s += r[0].transcript; $("#ag-in").value = s; };
+  rec.onend = () => { stopMic(); if ($("#ag-in").value.trim()) runAgent(); };
   rec.onerror = ev => { stopMic(); if (ev.error === "not-allowed") toast("마이크 권한이 꺼져 있어요. 브라우저 설정에서 허용해주세요"); };
   $("#ag-mic").classList.add("on"); rec.start();
 }
 async function runAgent() {
-  const text = $("#ag-in").value.trim(); if (!text) return $("#ag-in").focus();
-  const out = $("#ag-out"); out.innerHTML = '<p class="sv">알아듣는 중…</p>';
-  let items = [];
-  try { items = aKey ? await claudeParse(text) : localParse(text); } catch (e) { items = localParse(text); toast("Claude 연결에 실패해 기본 해석기로 넣었어요 (" + e.message + ")"); }
-  if (!items.length) { out.innerHTML = '<p class="sv">일정을 찾지 못했어요. "12월 1일 오후 3시 캐널시티 구경"처럼 말해보세요.</p>'; return; }
-  const snap = clone(S), added = [];
-  items.forEach(x => { const it = {id: uid(), t: x.time || "미정", txt: x.title, sub: "", note: "", place: x.place ? {name: x.place, q: x.place, url: "", img: "", memo: ""} : null}; placeAt(S.days[x.day].items, it); added.push({x, it}); });
-  save(added.length + "개 일정을 등록했습니다", snap);
-  out.innerHTML = added.map(({x, it}) => `<div class="agi"><span class="t">${esc(it.t)}</span><span><b>${esc(it.txt)}</b><small>${+S.days[x.day].date.slice(5, 7)}/${+S.days[x.day].date.slice(8)} ${esc(S.days[x.day].region)}${it.place ? " · " + esc(it.place.name) : ""}</small></span></div>`).join("") + '<p class="sv">등록했어요. 틀린 건 일정 카드를 눌러 고치거나 위의 "되돌리기"를 누르세요.</p>';
-  enter($$(".agi"), .06, 10); $("#ag-in").value = "";
-  const target = added[0].x.day; if (target !== cur) { cur = target; layoutArc(cur); try { history.replaceState(null, "", "#day" + (cur + 1)); } catch (e) {} }
-  tab = "list"; drawHero(); drawMain();
+  const text = $("#ag-in").value.trim(); if (!text || chatBusy) return; $("#ag-in").value = ""; bubble("me", text);
+  chatBusy = true; const typing = document.createElement("div"); typing.className = "msg ai typing"; typing.innerHTML = "<i></i><i></i><i></i>"; $("#ag-log").appendChild(typing); $("#ag-log").scrollTop = 1e6;
+  try {
+    if (aKey) { chat.push({role: "user", content: text}); await claudeTurn(); }
+    else { const items = localParse(text); if (!items.length) bubble("ai", "일정을 못 알아들었어요. 날짜와 시간, 할 일을 같이 말해주세요."); else { items.forEach(doAdd); bubble("ai", items.length + "개 넣어뒀어요. 식당 찾기까지 하려면 위에 Claude 키를 넣어주세요."); } }
+  } catch (e) { bubble("ai", "문제가 생겼어요: " + e.message); if (chat.length && chat[chat.length - 1].role === "user" && typeof chat[chat.length - 1].content === "string") chat.pop(); }
+  typing.remove(); chatBusy = false;
 }
 
 /* ---------- shell ---------- */
@@ -622,11 +680,11 @@ $("#root").innerHTML = `<div class="app"><div class="scroll" id="scroll">
     <div class="row"><span class="file"><label class="btn soft" for="f-img" style="display:inline-flex;align-items:center;cursor:pointer;min-height:40px;padding:8px 14px">내 사진으로 바꾸기</label><input type="file" id="f-img" accept="image/*"></span><button class="btn soft" id="f-noimg" style="min-height:40px;padding:8px 14px">지도로 되돌리기</button></div>
     <label class="lbl" for="f-memo">장소 메모</label><textarea class="in" id="f-memo" style="min-height:84px" placeholder="영업시간, 먹을 메뉴, 예약 여부"></textarea>
     <div class="row"><button class="del" id="f-del">이 일정 삭제</button><span style="display:flex;gap:8px"><button class="btn soft" id="f-close">닫기</button><button class="btn" id="f-save">저장</button></span></div></div>
-  <div class="sheet" id="agent" role="dialog" aria-modal="true" aria-labelledby="ag-h"><div class="grip"><i></i></div>
-    <h3 id="ag-h">말로 일정 추가</h3><p class="sv" id="ag-mode" style="margin-top:2px"></p>
-    <div class="agbox"><textarea class="in" id="ag-in" rows="3" placeholder="예) 12월 1일 오후 3시 캐널시티 구경, 저녁 7시 이치란에서 라멘"></textarea>
-      <div class="row" style="margin-top:10px"><button class="mic" id="ag-mic" aria-label="말하기">${I.mic}<span>말하기</span></button><span style="display:flex;gap:8px"><button class="btn soft" id="ag-manual">직접 입력</button><button class="btn" id="ag-go">등록</button></span></div></div>
-    <div id="ag-out"></div></div>
+  <div class="sheet chat" id="agent" role="dialog" aria-modal="true" aria-labelledby="ag-h"><div class="grip"><i></i></div>
+    <div class="chead"><h3 id="ag-h">여행 비서</h3><button class="lk" id="ag-manual">직접 입력</button></div>
+    <div id="ag-key" class="keyrow"><input class="in" id="ag-keyin" placeholder="Claude API 키 (sk-ant-...)" autocomplete="off" spellcheck="false"><button class="btn" id="ag-keysave">저장</button></div>
+    <div class="log" id="ag-log" aria-live="polite"></div>
+    <div class="composer"><button class="mic" id="ag-mic" aria-label="말하기">${I.mic}</button><textarea class="in" id="ag-in" rows="1" placeholder="예) 내일 점심 하카타역 근처 라멘집 넣어줘"></textarea><button class="send" id="ag-go" aria-label="보내기">${I.send}</button></div></div>
   <div class="toast" id="toast" role="status"></div></div>`;
 
 /* ---------- events ---------- */
@@ -642,6 +700,7 @@ document.addEventListener("click", e => {
   if (t.id === "ag-go") return runAgent();
   if (t.id === "ag-mic") return startMic();
   if (t.id === "ag-manual") { closeAgent(); return setTimeout(() => openSheet(null), 200); }
+  if (t.id === "ag-keysave") { aKey = $("#ag-keyin").value.trim(); try { aKey ? localStorage.setItem("fk4-akey", aKey) : localStorage.removeItem("fk4-akey"); } catch (x) {} $("#ag-key").style.display = aKey ? "none" : ""; return bubble("ai", aKey ? "키를 저장했어요. 이제 가고 싶은 곳을 말해주세요. 실제 가게를 찾아서 등록해둘게요." : "키를 지웠어요."); }
   if (t.id === "akeySave") { aKey = $("#akey").value.trim(); try { aKey ? localStorage.setItem("fk4-akey", aKey) : localStorage.removeItem("fk4-akey"); } catch (x) {} return toast(aKey ? "Claude 키를 저장했습니다" : "Claude 키를 지웠습니다"); }
   if (d.ed) return openSheet(d.ed);
   if (t.id === "memoSave") { S.days[cur].note = $("#memo").value; return save("메모를 저장했습니다"); }
