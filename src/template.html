@@ -211,8 +211,12 @@ textarea.in{min-height:120px;resize:vertical;line-height:1.55}
 {
 const P = (name, q, memo) => ({name, q: q || name, url: "", img: "", memo: memo || ""});
 /*SEED*/
-let n = 0;
-SEED.days.forEach(d => { d.items = d.items.map(a => ({id: "i" + (n++), t: a[0], txt: a[1], sub: a[2], place: a[3]})); });
+// 기본 일정(SEED)이 바뀌면 rev가 달라지고, 저장된 데이터에 새 일정을 합친다 (mergeSeed).
+// 기본 일정 항목은 "s-" id를 가진다. 제목이 같으면 같은 id라서 메모가 이어진다.
+const hs = s => { let h = 0; for (const c of s) h = (h * 31 + c.codePointAt(0)) | 0; return (h >>> 0).toString(36); };
+SEED.rev = hs(JSON.stringify(SEED));
+SEED.days.forEach(d => { const seen = {}; d.items = d.items.map(a => { let id = "s-" + d.id + "-" + hs(a[1]); seen[id] = (seen[id] || 0) + 1; if (seen[id] > 1) id += "-" + seen[id]; return {id, t: a[0], txt: a[1], sub: a[2], note: "", place: a[3]}; }); });
+const seedOwned = id => /^s-/.test(id) || /^i\d+$/.test(id);
 const FP = f => "https://commons.wikimedia.org/wiki/Special:FilePath/" + encodeURIComponent(f) + "?width=1600";
 const FPAGE = f => "https://commons.wikimedia.org/wiki/File:" + encodeURIComponent(f.replace(/ /g, "_"));
 const PHOTO = {
@@ -295,7 +299,30 @@ function tween(from, to, opt, up) {
 function enter(els, gap, y) { els = [...els].filter(Boolean); if (RM || !els.length || !MO) return; MO.animate(els, {opacity: [0, 1], y: [y || 14, 0]}, {duration: .45, delay: MO.stagger(gap || .04), ease: [.22, 1, .36, 1]}); }
 
 let S;
-try { const l = localStorage.getItem("fk4"); S = l ? JSON.parse(l) : clone(SEED); if (S.v !== 2) S = clone(SEED); } catch (e) { S = clone(SEED); }
+function mergeSeed(old) {
+  const r = Object.assign({}, old), hid = new Set(old.hidden || []);
+  r.hidden = [...hid]; r.rev = SEED.rev;
+  r.days = clone(SEED.days).map(d => {
+    const od = (old.days || []).find(x => x.id === d.id);
+    d.items = d.items.filter(i => !hid.has(i.id));
+    if (!od) return d;
+    if (od.note) d.note = od.note;
+    const mine = od.items.filter(i => seedOwned(i.id));
+    d.items.forEach(i => {
+      const o = mine.find(x => x.id === i.id) || mine.find(x => x.txt === i.txt); if (!o) return;
+      if (o.note) i.note = o.note;
+      if (o.place && i.place && o.place.name === i.place.name) { ["url", "img"].forEach(k => { if (!i.place[k] && o.place[k]) i.place[k] = o.place[k]; }); if (!i.place.memo && o.place.memo) i.place.memo = o.place.memo; }
+    });
+    od.items.filter(i => !seedOwned(i.id)).forEach(i => placeAt(d.items, i));
+    return d;
+  });
+  r.todos = (old.todos || []).slice(); SEED.todos.forEach(t => { const o = r.todos.find(x => x.txt === t.txt); if (!o) r.todos.push(clone(t)); else if (t.done) o.done = true; });
+  r.budget = (old.budget || []).slice(); SEED.budget.forEach(b => { if (!r.budget.some(x => x.id === b.id)) r.budget.push(clone(b)); });
+  return r;
+}
+let merged = false;
+try { const l = localStorage.getItem("fk4"); S = l ? JSON.parse(l) : null; if (!S || S.v !== 2) S = clone(SEED); else if (S.rev !== SEED.rev) { S = mergeSeed(S); merged = true; } } catch (e) { S = clone(SEED); }
+if (merged) { persist(); setTimeout(() => toast("새로 올라온 일정을 받아왔어요"), 900); }
 let listF = "all";
 let cur = 0, view = "plan", tab = "list", bTab = "add", mapFocus = null, undo = null, edit = null, pendImg = null, lastLeft = null;
 function persist() { try { localStorage.setItem("fk4", JSON.stringify(S)); } catch (e) { toast("브라우저 저장 공간이 꽉 찼습니다. 사진을 줄여주세요"); } }
@@ -510,7 +537,7 @@ function openSheet(id) {
 }
 function closeSheet() { if (sY >= 1) return; scrimTo(0); const sh = $("#sheet"); tween(sY, 1, {stiffness: 360, damping: 36}, v => { sY = v; sh.style.transform = `translateY(${v * 110}%)`; }); }
 function prev(img) { const nm = $("#f-name").value.trim(), box = $("#f-prev"); box.innerHTML = imgOk(img) ? `<img src="${esc(img)}" alt="미리보기">` : nm ? frame(nm, 16) : "<p>장소 이름을 입력하면 구글 지도 미리보기가 여기에 떠요</p>"; }
-const mins = t => { const m = /^(\d{1,2}):(\d{2})/.exec(t || ""); return m ? +m[1] * 60 + +m[2] : null; };
+function mins(t) { const m = /^(\d{1,2}):(\d{2})/.exec(t || ""); return m ? +m[1] * 60 + +m[2] : null; }
 function placeAt(items, it) { const v = mins(it.t); if (v === null) return items.push(it); const k = items.findIndex(x => mins(x.t) !== null && mins(x.t) > v); k < 0 ? items.push(it) : items.splice(k, 0, it); }
 async function shrink(file) { const u = URL.createObjectURL(file); const im = await new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = no; i.src = u; }); const k = Math.min(1, 640 / Math.max(im.width, im.height)), c = document.createElement("canvas"); c.width = Math.round(im.width * k); c.height = Math.round(im.height * k); c.getContext("2d").drawImage(im, 0, 0, c.width, c.height); URL.revokeObjectURL(u); return c.toDataURL("image/jpeg", .72); }
 
@@ -677,12 +704,14 @@ document.addEventListener("click", e => {
   if (t.id === "bk-out") { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([JSON.stringify(S)], {type: "application/json"})); a.download = "fukuoka-trip-backup.json"; a.click(); return toast("백업 파일을 내려받았습니다"); }
   if (t.id === "f-close") return closeSheet();
   if (t.id === "f-noimg") { pendImg = ""; return prev(""); }
-  if (t.id === "f-del") { const snap = clone(S), dd = S.days[edit.di]; dd.items = dd.items.filter(x => x.id !== edit.id); closeSheet(); drawAll(); return save("일정을 삭제했습니다", snap); }
+  if (t.id === "f-del") { const snap = clone(S), dd = S.days[edit.di]; if (seedOwned(edit.id)) (S.hidden = S.hidden || []).push(edit.id); dd.items = dd.items.filter(x => x.id !== edit.id); closeSheet(); drawAll(); return save("일정을 삭제했습니다", snap); }
   if (t.id === "f-save") {
     const txt = $("#f-txt").value.trim(); if (!txt) return $("#f-txt").focus();
     const url = $("#f-url").value.trim(); if (url && !httpsOk(url)) { toast("링크는 https:// 로 시작해야 합니다"); return $("#f-url").focus(); }
     const di = +$("#f-day").value, old = edit.id ? S.days[edit.di].items.find(x => x.id === edit.id) : null, it = old || {id: uid(), t: "", txt: "", sub: "", place: null};
     const tm = $("#f-t").value.trim() || "미정", moved = !old || old.t !== tm || edit.di !== di, name = $("#f-name").value.trim();
+    // 기본 일정을 앱에서 직접 고치면 내 일정으로 바꿔서, 다음에 새 일정이 올라와도 덮어쓰지 않는다
+    if (old && seedOwned(old.id)) { (S.hidden = S.hidden || []).push(old.id); old.id = uid(); }
     it.t = tm; it.txt = txt;
     if (name) { const p = it.place || {q: ""}; if (p.name !== name) p.q = name; Object.assign(p, {name, url, memo: $("#f-memo").value.trim()}); if (pendImg !== null) p.img = pendImg; p.img = p.img || ""; it.place = p; } else it.place = null;
     if (old && moved) S.days[edit.di].items = S.days[edit.di].items.filter(x => x.id !== it.id);
