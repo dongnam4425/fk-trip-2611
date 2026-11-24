@@ -413,7 +413,7 @@ function heroBody() {
   }
   if (view === "budget") {
     const L = ledger(), man = v => manNum(v) + "만";
-    return {big: null, left: L.total / 2, cap: `1인당 · 예산 ${manNum(S.total / 2)}만원 중 ${(L.total / S.total * 100).toFixed(0)}%`, tiles: [[L.A, man(L.useA)], [L.B, man(L.useB)], ["공용", man(L.shared)]]};
+    return {big: null, left: L.total / 2, cap: `1인당 · 예산 ${manNum(S.total / 2)}만원 중 ${(L.total / S.total * 100).toFixed(0)}%`, tiles: [[L.A, man(L.useA)], [L.B, man(L.useB)], ["공용 1인", man(L.shared / 2)]]};
   }
   const done = S.todos.filter(t => t.done).length;
   return {big: `${done}<small>/${S.todos.length}</small>`, cap: "정한 것", tiles: [["남음", S.todos.length - done + "개"], ["출발까지", dday()], ["기록", S.expenses.length + "건"]]};
@@ -473,9 +473,9 @@ function budgetMain() {
       <div class="card" style="padding:4px 16px">${S.expenses.slice().reverse().filter(e => listF === "all" || (e.kind || "shared") === listF).map(e => { const b = S.budget.find(x => x.id === e.cat), d = S.days.find(x => x.id === e.day), k = (e.kind || "shared"); return `<div class="ex"><span><span class="tag ${k}">${k === "shared" ? "공용" : "개인"}</span>${esc(e.memo || (b ? b.cat : ""))}<small>${esc((d ? +d.date.slice(5, 7) + "/" + +d.date.slice(8) + " · " : "") + (b ? b.cat : "") + " · " + (e.who === "b" ? L.B : L.A) + " 결제")}</small></span><b>${e.cur === "JPY" ? "¥" + e.amount.toLocaleString() : won(e.amount)}</b><button class="x" data-dx="${esc(e.id)}" aria-label="지출 삭제">×</button></div>`; }).join("") || '<p class="empty">아직 기록이 없어요. 기록 탭에서 영수증을 올려보세요.</p>'}</div>
       <div class="card"><b style="font-size:15px">둘이 같이 쓰기</b><p class="sv" style="margin-top:4px">각자 기록한 뒤 "내 기록 보내기"로 복사해 카톡으로 보내고, 받은 쪽은 "받은 기록 합치기"에 붙여넣으면 겹치지 않게 합쳐져요.</p><div class="row" style="justify-content:flex-start"><button class="btn soft" id="sync-out">내 기록 보내기</button><button class="btn soft" id="sync-in">받은 기록 합치기</button></div><textarea class="in" id="sync-box" placeholder="받은 기록을 여기에 붙여넣고 다시 '받은 기록 합치기'를 누르세요" style="display:none;min-height:80px;margin-top:10px;font-size:12px"></textarea></div>`;
   }
-  else body = S.budget.map(b => { const s = spent(b), p = b.amt ? s / b.amt : 0, over = p > 1;
-    return `<div class="card"><div class="ch"><div><b>${esc(b.cat)}</b><small>예산 ${won(b.amt)}</small></div><span class="t">${manNum(s)}<span style="font-size:14px;margin-left:2px">만원</span></span></div>
-      <div class="gauge"><i style="width:${Math.min(100, p * 100).toFixed(1)}%"></i><u style="left:${Math.min(100, p * 100).toFixed(1)}%"></u></div><div class="scale"><span>0</span><span>${won(b.amt)}</span></div>
+  else body = `<p class="sv" style="margin:0 0 10px">모든 금액은 1인 기준이에요 (둘이 쓴 돈 ÷ 2)</p>` + S.budget.map(b => { const s = spent(b), p = b.amt ? s / b.amt : 0, over = p > 1;
+    return `<div class="card"><div class="ch"><div><b>${esc(b.cat)}</b><small>1인 예산 ${won(b.amt / 2)}</small></div><span class="t">${manNum(s / 2)}<span style="font-size:14px;margin-left:2px">만원</span></span></div>
+      <div class="gauge"><i style="width:${Math.min(100, p * 100).toFixed(1)}%"></i><u style="left:${Math.min(100, p * 100).toFixed(1)}%"></u></div><div class="scale"><span>0</span><span>${won(b.amt / 2)}</span></div>
       <div class="foot">${b.fixed ? `<label class="chk"><input type="checkbox" data-paid="${b.id}"${b.paid ? " checked" : ""}>결제 완료 (공용으로 반반)</label>` : `<span>${(p * 100).toFixed(0)}% 사용</span>`}<span class="st"><i style="background:${over ? "var(--warn)" : "var(--ok)"}"></i>${over ? "초과" : "여유"}</span></div></div>`; }).join("");
   return `<h2>예산 관리</h2><div class="tabs" id="tabs"><span class="ind"></span><button data-btab="add" class="${bTab === "add" ? "on" : ""}">기록</button><button data-btab="list" class="${bTab === "list" ? "on" : ""}">내역·정산</button><button data-btab="cats" class="${bTab === "cats" ? "on" : ""}">항목별</button></div><div id="tb">${body}</div>`;
 }
