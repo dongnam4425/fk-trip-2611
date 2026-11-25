@@ -484,8 +484,7 @@ function ledger() {
 function syncWho() {
   const pot = ($("#x-who .on") || {dataset: {}}).dataset.who === "c", seg = $("#x-kind"), h = $("#x-who-hint");
   if (!seg) return;
-  seg.style.opacity = pot ? ".45" : "";
-  $$("#x-kind button").forEach(b => { b.disabled = pot; if (pot) b.classList.toggle("on", b.dataset.kind === "shared"); });
+  $$("#x-kind button").forEach(b => { if (pot) b.classList.toggle("on", b.dataset.kind === "shared"); b.disabled = pot && b.dataset.kind === "personal"; });
   if (h) h.textContent = pot ? "공용은 둘이 같이 쓰는 돈으로 낸 것이라 정산에서 빠지고, 쓴 돈에는 반씩 들어가요" : "";
 }
 function budgetMain() {
