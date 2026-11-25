@@ -18,7 +18,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=IBM+Plex+Sans+KR:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-html,body{margin:0;height:100%;background:#e9edf2}
+html,body{margin:0;height:100%;background:#fff}
+@media(min-width:520px){html,body{background:#e9edf2}}
 /* VOICE  airy, clean, one calm screen per day
    IDEA   a weather-app-like day card: the place's real photo melts into sky blue, then into white paper
    PICTURE real photo of that day's town at the top, fading into blue then white
@@ -32,9 +33,15 @@ button,input,select,textarea{font:inherit;color:inherit}
 button{cursor:pointer;-webkit-tap-highlight-color:transparent}
 :focus-visible{outline:2px solid var(--sky);outline-offset:2px;border-radius:10px}
 #root{height:100%}
+/* iOS 홈 화면 앱(standalone) + viewport-fit=cover 에서는 height:100%가
+   화면 높이에서 하단 홈 인디케이터 영역(약 34px)을 뺀 값으로 잡혀,
+   화면 맨 아래에 html 배경 띠가 남고 하단 바가 그 위에서 뚝 끊겨 보인다.
+   standalone에서는 100vh(=화면 전체 높이)로 채워 홈 인디케이터 뒤까지 덮는다. */
+html.sa,html.sa body,html.sa #root{height:100vh}
+@media all and (display-mode:standalone){html,body,#root{height:100vh}}
 .app{position:relative;width:100%;max-width:430px;height:100%;margin:0 auto;overflow:hidden;background:var(--paper)}
 @media(min-width:520px){#root{display:grid;place-items:center}.app{width:430px;height:min(932px,calc(100dvh - 40px));border-radius:52px;box-shadow:0 0 0 10px #111,0 0 0 12px #cfd4db,0 40px 90px -40px rgba(20,30,60,.5)}}
-.scroll{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;scrollbar-width:none;padding-bottom:110px}
+.scroll{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;scrollbar-width:none;padding-bottom:calc(110px + env(safe-area-inset-bottom,0px))}
 .scroll::-webkit-scrollbar{display:none}
 .hero{position:relative;color:#fff;padding:calc(18px + env(safe-area-inset-top,0px)) 20px 84px;overflow:hidden;touch-action:pan-y}
 .ph{position:absolute;inset:0;z-index:0}
@@ -206,7 +213,7 @@ textarea.in{min-height:120px;resize:vertical;line-height:1.55}
 .pk.done b{text-decoration:line-through;color:var(--sub)}
 .pk.done small{opacity:.7}
 .tabs button{white-space:nowrap}
-.bar{position:absolute;left:0;right:0;bottom:0;z-index:8;display:flex;justify-content:center;padding:14px 16px calc(14px + env(safe-area-inset-bottom,0px));background:linear-gradient(rgba(255,255,255,0),rgba(255,255,255,.95) 45%);pointer-events:none}
+.bar{position:absolute;left:0;right:0;bottom:0;z-index:8;display:flex;justify-content:center;padding:14px 16px calc(14px + env(safe-area-inset-bottom,0px));background:linear-gradient(rgba(255,255,255,0),rgba(255,255,255,.96) 45%,#fff 88%);pointer-events:none}
 .nav{pointer-events:auto;display:flex;gap:4px;align-items:center;background:#fff;border-radius:999px;padding:6px 8px;box-shadow:0 0 0 1px var(--line),0 12px 30px -14px rgba(20,30,60,.35)}
 .nav a{width:58px;display:grid;justify-items:center;gap:1px;color:#a3a9b3;text-decoration:none;font-size:10.5px;font-weight:500;padding:4px 0}
 .nav a.on{color:var(--ink)}
@@ -230,6 +237,9 @@ textarea.in{min-height:120px;resize:vertical;line-height:1.55}
 .toast button{border:0;background:none;color:#fff;font-weight:600;text-decoration:underline;padding:0}
 @media(prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
+<script>
+if(navigator.standalone===true||(window.matchMedia&&window.matchMedia("(display-mode: standalone)").matches))document.documentElement.classList.add("sa");
+</script>
 </head>
 <body>
 <div id="root"></div>
