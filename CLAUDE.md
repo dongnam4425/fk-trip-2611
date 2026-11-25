@@ -33,7 +33,7 @@ Claude Code가 **API 없이** 직접 일정을 찾아 `src/trip-data.js`에 넣�
 
 ## 파일
 
-- `src/trip-data.js` — 기본 일정·예산·할 일 (여기만 고치면 됨)
+- `src/trip-data.js` — 기본 일정·예산·할 일·준비물 (여기만 고치면 됨)
 - `src/template.html` — 화면·기능
 - `src/build.ps1` — 위 둘을 합쳐 `index.html` 생성 (`src/build.py`는 예전 방식, Motion 파일이 따로 필요)
 - `index.html` — 배포본. 직접 고치지 말고 빌드로 만든다.
@@ -51,4 +51,5 @@ Claude Code가 **API 없이** 직접 일정을 찾아 `src/trip-data.js`에 넣�
 - 사람별 쓴 돈 = 본인 개인 지출 + 공용 지출의 절반. 항목별 예산은 각자 따로 고칠 수 있고 `S.pb[사람][항목id]`에 저장되며, 없으면 전체 예산의 절반이다. 새 화면도 이 기준을 따른다.
 - 지출의 '누가 냈나요'는 `who`에 `a`(나)·`b`(여자친구)·`c`(공용). `c`는 둘이 같이 쓰는 돈으로 낸 것이라 정산(`bal`)에서 빠지고, 쓴 돈에는 반씩 들어간다. `c`는 항상 `kind: "shared"`다.
 - '결제 완료'(숙소·항공 같은 고정 항목의 `paid`)는 `S.budget`에 저장하면서, 본문 저장이 실패하거나 다른 탭이 옛 본문을 덮어써도 남도록 작은 키 `localStorage.fk4-paid`(항목id → 1/0)에도 함께 적는다. 앱을 열 때 `applyPaid()`가 이 값을 다시 적용하고, `mergeSeed`는 기존 항목의 `paid`를 그대로 이어받는다. 이 값을 지우거나 다른 키로 옮기지 말 것.
+- 준비물(예산 화면의 '준비물' 탭)은 `SEED.pack`이 기본 목록이고, 체크 상태는 `S.pack[].done`과 작은 키 `localStorage.fk4-pack`(항목id → 1/0)에 같이 적는다(`applyPack`). 지운 기본 항목은 `S.packHidden`에 id를 남겨 `mergeSeed`가 다시 넣지 않는다. 기본 항목 id는 `p1`~`p12`이므로 바꾸지 말 것. 앱에서 추가한 항목은 `uid()` id라서 새 목록이 올라와도 뒤에 그대로 남는다.
 - 1만원 이상 금액은 만원 단위 소수 한 자리로 쓴다 (예: 72.9만원). `won()`·`manNum()`을 쓴다.

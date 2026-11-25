@@ -197,6 +197,15 @@ textarea.in{min-height:120px;resize:vertical;line-height:1.55}
 .todo{display:flex;gap:12px;align-items:center;padding:14px 2px;border-bottom:1px solid var(--line);cursor:pointer}
 .todo:last-child{border-bottom:0}
 .todo.done span{text-decoration:line-through;color:var(--sub)}
+.pk{display:flex;align-items:center;gap:4px;padding:13px 0;border-bottom:1px solid var(--line)}
+.pk:last-child{border-bottom:0}
+.pkl{display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px;align-items:center;flex:1;min-width:0;cursor:pointer}
+.pkl input{width:18px;height:18px;margin:0;accent-color:var(--ink);flex:none}
+.pkl b{display:block;font-weight:600;font-size:15.5px}
+.pkl small{display:block;color:var(--sub);font-size:12.5px;margin-top:2px}
+.pk.done b{text-decoration:line-through;color:var(--sub)}
+.pk.done small{opacity:.7}
+.tabs button{white-space:nowrap}
 .bar{position:absolute;left:0;right:0;bottom:0;z-index:8;display:flex;justify-content:center;padding:14px 16px calc(14px + env(safe-area-inset-bottom,0px));background:linear-gradient(rgba(255,255,255,0),rgba(255,255,255,.95) 45%);pointer-events:none}
 .nav{pointer-events:auto;display:flex;gap:4px;align-items:center;background:#fff;border-radius:999px;padding:6px 8px;box-shadow:0 0 0 1px var(--line),0 12px 30px -14px rgba(20,30,60,.35)}
 .nav a{width:58px;display:grid;justify-items:center;gap:1px;color:#a3a9b3;text-decoration:none;font-size:10.5px;font-weight:500;padding:4px 0}
@@ -267,7 +276,22 @@ const SEED = {
     {id:"b5", cat:"식비, 디저트", amt:1000000}, {id:"b6", cat:"교통비", amt:220000}, {id:"b7", cat:"관광, 체험", amt:100000},
     {id:"b8", cat:"기념품, 일반 쇼핑", amt:400000}, {id:"b9", cat:"의류 쇼핑", amt:605384}, {id:"b10", cat:"eSIM, 여행자보험", amt:40000}],
   expenses: [],
-  todos: ["11/29 라멘 이나다 이후 일정","11/30 하루 일정","벳푸 왕복 기차 시간","아프리칸 사파리 갈지","유후인 갈지","날짜별 맛집, 카페","텐진 옷 쇼핑 매장","eSIM, 여행자보험 가입"].map((t, i) => ({id: "t" + i, txt: t, done: false}))
+  todos: ["11/29 라멘 이나다 이후 일정","11/30 하루 일정","벳푸 왕복 기차 시간","아프리칸 사파리 갈지","유후인 갈지","날짜별 맛집, 카페","텐진 옷 쇼핑 매장","eSIM, 여행자보험 가입"].map((t, i) => ({id: "t" + i, txt: t, done: false})),
+  // 여행 전 준비물 (예산 화면의 준비물 탭). 체크 상태는 휴대폰에 저장된다.
+  pack: [
+    {id:"p1", txt:"여권", sub:"만료 6개월 이상 남았는지 확인"},
+    {id:"p2", txt:"Visit Japan Web QR", sub:"입국·세관 신고 QR을 캡처해 두기"},
+    {id:"p3", txt:"eSIM 또는 로밍", sub:"여행자보험 가입도 같이"},
+    {id:"p4", txt:"트래블월렛·트래블로그 카드", sub:"출발 전 충전, 해외 결제·ATM 수수료"},
+    {id:"p5", txt:"엔화 현금", sub:"라멘 이나다는 현금 전용"},
+    {id:"p6", txt:"모바일 스이카", sub:"애플 지갑에 Suica 추가하고 충전"},
+    {id:"p7", txt:"돼지코 110V 어댑터", sub:"일본은 A형 100V, 2구짜리 하나면 충분"},
+    {id:"p8", txt:"보조배터리, 충전 케이블", sub:"보조배터리는 기내 손가방에만"},
+    {id:"p9", txt:"항공·숙소·기차 바우처", sub:"예약 확인서를 사진으로 저장"},
+    {id:"p10", txt:"상비약", sub:"해열제, 소화제, 멀미약, 밴드"},
+    {id:"p11", txt:"세면·스킨케어", sub:"100ml 이하, 료칸 어메니티는 있어요"},
+    {id:"p12", txt:"편한 신발, 겉옷", sub:"12월 초 5~15도, 벳푸는 언덕"}
+  ]
 };
 
 // 기본 일정(SEED)이 바뀌면 rev가 달라지고, 저장된 데이터에 새 일정을 합친다 (mergeSeed).
@@ -275,6 +299,7 @@ const SEED = {
 const hs = s => { let h = 0; for (const c of s) h = (h * 31 + c.codePointAt(0)) | 0; return (h >>> 0).toString(36); };
 SEED.rev = hs(JSON.stringify(SEED));
 SEED.days.forEach(d => { const seen = {}; d.items = d.items.map(a => { let id = "s-" + d.id + "-" + hs(a[1]); seen[id] = (seen[id] || 0) + 1; if (seen[id] > 1) id += "-" + seen[id]; return {id, t: a[0], txt: a[1], sub: a[2], note: "", place: a[3]}; }); });
+(SEED.pack || []).forEach(p => { p.done = false; });
 const seedOwned = id => /^s-/.test(id) || /^i\d+$/.test(id);
 const FP = f => "https://commons.wikimedia.org/wiki/Special:FilePath/" + encodeURIComponent(f) + "?width=1600";
 const FPAGE = f => "https://commons.wikimedia.org/wiki/File:" + encodeURIComponent(f.replace(/ /g, "_"));
@@ -379,6 +404,11 @@ function mergeSeed(old) {
     return d;
   });
   r.todos = (old.todos || []).slice(); SEED.todos.forEach(t => { const o = r.todos.find(x => x.txt === t.txt); if (!o) r.todos.push(clone(t)); else if (t.done) o.done = true; });
+  // 준비물: 새 기본 목록은 지운 항목(packHidden)을 빼고 다시 넣고, 내가 추가한 항목은 뒤에 남긴다. 체크 상태는 이어진다.
+  const hidP = new Set(old.packHidden || []), oldPack = old.pack || []; r.packHidden = [...hidP];
+  r.pack = clone(SEED.pack || []).filter(p => !hidP.has(p.id));
+  r.pack.forEach(p => { const o = oldPack.find(x => x.id === p.id) || oldPack.find(x => x.txt === p.txt); if (o) p.done = !!o.done; });
+  oldPack.filter(p => !(SEED.pack || []).some(s => s.id === p.id || s.txt === p.txt)).forEach(p => r.pack.push(clone(p)));
   // 결제 완료(paid)는 새 기본값이 와도 그대로 이어진다 (old 쪽 항목을 그대로 두고, 없던 항목만 새로 넣는다)
   r.budget = (old.budget || []).slice(); SEED.budget.forEach(b => { const o = r.budget.find(x => x.id === b.id); if (!o) r.budget.push(clone(b)); else if (o.paid === undefined) o.paid = !!b.paid; });
   return r;
@@ -386,7 +416,8 @@ function mergeSeed(old) {
 let merged = false;
 try { const l = localStorage.getItem("fk4"); S = l ? JSON.parse(l) : null; if (!S || S.v !== 2) S = clone(SEED); else if (S.rev !== SEED.rev) { S = mergeSeed(S); merged = true; } } catch (e) { S = clone(SEED); }
 applyPaid();
-if (merged) { persist(); setTimeout(() => toast("새로 올라온 일정을 받아왔어요"), 900); } else { persistPaid(); }
+applyPack();
+if (merged) { persist(); setTimeout(() => toast("새로 올라온 일정을 받아왔어요"), 900); } else { persistPaid(); persistPack(); }
 let listF = "all";
 let cur = 0, view = "plan", tab = "list", bTab = "add", mapFocus = null, undo = null, edit = null, pendImg = null, lastLeft = null;
 // 결제 완료(paid)는 본문(fk4)과 따로 작은 키(fk4-paid)에도 적어 둔다.
@@ -398,7 +429,15 @@ function applyPaid() {
   if (!saved || typeof saved !== "object") return;
   (S.budget || []).forEach(b => { if (Object.prototype.hasOwnProperty.call(saved, b.id)) b.paid = !!saved[b.id]; });
 }
-function persist() { persistPaid(); try { localStorage.setItem("fk4", JSON.stringify(S)); } catch (e) { toast("브라우저 저장 공간이 꽉 찼습니다. 사진을 줄여주세요"); } }
+// 준비물 체크도 본문(fk4)과 따로 작은 키(fk4-pack)에 적어 둔다.
+function packMap() { const m = {}; (S.pack || []).forEach(p => { m[p.id] = p.done ? 1 : 0; }); return m; }
+function persistPack() { try { localStorage.setItem("fk4-pack", JSON.stringify(packMap())); } catch (e) {} }
+function applyPack() {
+  let saved = null; try { saved = JSON.parse(localStorage.getItem("fk4-pack") || "null"); } catch (e) {}
+  if (!saved || typeof saved !== "object") return;
+  (S.pack || []).forEach(p => { if (Object.prototype.hasOwnProperty.call(saved, p.id)) p.done = !!saved[p.id]; });
+}
+function persist() { persistPaid(); persistPack(); try { localStorage.setItem("fk4", JSON.stringify(S)); } catch (e) { toast("브라우저 저장 공간이 꽉 찼습니다. 사진을 줄여주세요"); } }
 function save(msg, snap) { undo = snap || null; persist(); toast(msg, !!snap); }
 function toast(msg, u) { const t = $("#toast"); t.innerHTML = "<span></span>" + (u ? '<button id="undo">되돌리기</button>' : ""); t.firstChild.textContent = msg; t.classList.add("on"); clearTimeout(t.h); t.h = setTimeout(() => t.classList.remove("on"), u ? 4000 : 1800); }
 
@@ -460,6 +499,10 @@ function heroBody() {
     return {big: String(+d.date.slice(8)).padStart(2, "0"), cap: `${+d.date.slice(5, 7)}월 ${d.wd}, ${d.region}`,
       tiles: [["일정", d.items.length + "개"], ["장소", places + "곳"], ["숙소", d.hotel ? d.hotel.replace("호텔 ", "").split(" ")[0] : "귀국"]]};
   }
+  if (view === "budget" && bTab === "pack") {
+    const pk = S.pack || [], dn = pk.filter(x => x.done).length;
+    return {big: `${dn}<small>/${pk.length}</small>`, cap: "여행 전 준비물", tiles: [["남음", pk.length - dn + "개"], ["출발까지", dday()], ["완료", (pk.length ? Math.round(dn / pk.length * 100) : 0) + "%"]]};
+  }
   if (view === "budget") {
     const L = ledger(), man = v => manNum(v) + "만";
     const use = me === "b" ? L.useB : L.useA, nm = me === "b" ? L.B : L.A, bud = pTotal(me);
@@ -476,7 +519,7 @@ function drawHero(animNum) {
   $("#tiles").innerHTML = h.tiles.map(t => `<div class="tile"><span>${esc(t[0])}</span><b>${esc(t[1])}</b></div>`).join("");
   $(".arc").style.display = view === "plan" ? "" : "none";
   $("#dots").innerHTML = view === "plan" ? S.days.map((d, i) => `<i class="${i === cur ? "on" : ""}"></i>`).join("") : "";
-  if (view === "budget") { const to = h.left, from = lastLeft === null ? 0 : lastLeft; lastLeft = to; tween(from, to, {stiffness: 110, damping: 24}, v => { $("#big").innerHTML = manNum(v) + "<small>만원</small>"; }); }
+  if (view === "budget" && h.left !== undefined) { const to = h.left, from = lastLeft === null ? 0 : lastLeft; lastLeft = to; tween(from, to, {stiffness: 110, damping: 24}, v => { $("#big").innerHTML = manNum(v) + "<small>만원</small>"; }); }
   if (animNum && MO && !RM) MO.animate("#big", {y: [animNum * 24, 0], opacity: [0, 1]}, {type: "spring", stiffness: 260, damping: 26});
   setPhoto();
 }
@@ -533,13 +576,21 @@ function budgetMain() {
       <div class="card" style="padding:4px 16px">${S.expenses.slice().reverse().filter(e => listF === "all" || kindOf(e) === listF).map(e => { const b = S.budget.find(x => x.id === e.cat), d = S.days.find(x => x.id === e.day), k = kindOf(e); return `<div class="ex"><span><span class="tag ${k}">${k === "shared" ? "공용" : "개인"}</span>${esc(e.memo || (b ? b.cat : ""))}<small>${esc((d ? +d.date.slice(5, 7) + "/" + +d.date.slice(8) + " · " : "") + (b ? b.cat : "") + " · " + (e.who === "b" ? L.B : e.who === "c" ? "공용" : L.A) + " 결제")}</small></span><b>${e.cur === "JPY" ? "¥" + e.amount.toLocaleString() : won(e.amount)}</b><button class="x" data-dx="${esc(e.id)}" aria-label="지출 삭제">×</button></div>`; }).join("") || '<p class="empty">아직 기록이 없어요. 기록 탭에서 영수증을 올려보세요.</p>'}</div>
       <div class="card"><b style="font-size:15px">둘이 같이 쓰기</b><p class="sv" style="margin-top:4px">각자 기록한 뒤 "내 기록 보내기"로 복사해 카톡으로 보내고, 받은 쪽은 "받은 기록 합치기"에 붙여넣으면 겹치지 않게 합쳐져요. 내가 정한 예산도 같이 가요.</p><div class="row" style="justify-content:flex-start"><button class="btn soft" id="sync-out">내 기록 보내기</button><button class="btn soft" id="sync-in">받은 기록 합치기</button></div><textarea class="in" id="sync-box" placeholder="받은 기록을 여기에 붙여넣고 다시 '받은 기록 합치기'를 누르세요" style="display:none;min-height:80px;margin-top:10px;font-size:12px"></textarea></div>`;
   }
+  else if (bTab === "pack") {
+    const pk = S.pack || [], dn = pk.filter(x => x.done).length, pct = pk.length ? dn / pk.length * 100 : 0;
+    body = `<div class="card"><div class="ch"><div><b>준비 완료 ${dn}/${pk.length}</b><small>출발까지 ${dday()}</small></div><span class="t">${pct.toFixed(0)}<span style="font-size:14px;margin-left:2px">%</span></span></div><div class="gauge"><i style="width:${pct.toFixed(1)}%"></i></div></div>
+      <div class="card" style="padding:4px 16px">${pk.map(x => `<div class="pk${x.done ? " done" : ""}"><label class="pkl"><input type="checkbox" data-pack="${esc(x.id)}"${x.done ? " checked" : ""}><span><b>${esc(x.txt)}</b>${x.sub ? `<small>${esc(x.sub)}</small>` : ""}</span></label><button class="x" data-pkdel="${esc(x.id)}" aria-label="${esc(x.txt)} 삭제">×</button></div>`).join("") || '<p class="empty">준비물이 비어 있어요. 아래에서 추가해보세요.</p>'}</div>
+      <div class="row" style="flex-wrap:nowrap"><input class="in" id="pack-new" placeholder="준비물 추가"><button class="btn" id="pack-add">추가</button></div>
+      <p class="sv" style="margin-top:10px">체크한 상태는 이 휴대폰에 저장돼요. 목록이 새로 올라와도 체크는 그대로 남아요.</p>`;
+  }
   else { const fx = S.budget.filter(b => b.fixed), pd = fx.filter(b => b.paid);
     body = `<p class="sv" style="margin:0 0 8px">${esc(me === "b" ? L.B : L.A)} 기준이에요. 공용은 반, 개인은 본인 것만 들어가요. 예산 숫자를 눌러 고칠 수 있어요.</p><p class="sv" style="margin:0 0 10px"><b style="color:var(--ink)">결제 완료 ${pd.length}/${fx.length}</b> · ${won(pd.reduce((a, b) => a + b.amt, 0))} 반영</p>` + S.budget.map(b => { const s = pSpent(me, b), a = pBud(me, b), p = a ? s / a : 0, over = p > 1;
     return `<div class="card"><div class="ch"><div><b>${esc(b.cat)}</b><small>예산 <input class="bamt" data-pb="${b.id}" inputmode="decimal" aria-label="${esc(b.cat)} 예산(만원)" value="${manNum(a)}">만원</small></div><span class="t">${manNum(s)}<span style="font-size:14px;margin-left:2px">만원</span></span></div>
       <div class="gauge"><i style="width:${Math.min(100, p * 100).toFixed(1)}%"></i><u style="left:${Math.min(100, p * 100).toFixed(1)}%"></u></div><div class="scale"><span>0</span><span>${won(a)}</span></div>
       <div class="foot">${b.fixed ? `<label class="chk${b.paid ? " on" : ""}"><input type="checkbox" data-paid="${b.id}"${b.paid ? " checked" : ""}><span>${b.paid ? "결제 완료 · 반영됨" : "결제 완료 (공용으로 반반)"}</span></label>` : `<span>${(p * 100).toFixed(0)}% 사용</span>`}<span class="st"><i style="background:${over ? "var(--warn)" : "var(--ok)"}"></i>${over ? "초과" : "여유"}</span></div></div>`; }).join("");
   }
-  return `<h2>예산 관리</h2><div class="seg2" id="me-sw" style="margin-bottom:12px"><button data-me="a" class="${me === "a" ? "on" : ""}">${esc(L.A)}</button><button data-me="b" class="${me === "b" ? "on" : ""}">${esc(L.B)}</button></div><div class="tabs" id="tabs"><span class="ind"></span><button data-btab="add" class="${bTab === "add" ? "on" : ""}">기록</button><button data-btab="list" class="${bTab === "list" ? "on" : ""}">내역·정산</button><button data-btab="cats" class="${bTab === "cats" ? "on" : ""}">항목별</button></div><div id="tb">${body}</div>`;
+  const sw = bTab === "pack" ? "" : `<div class="seg2" id="me-sw" style="margin-bottom:12px"><button data-me="a" class="${me === "a" ? "on" : ""}">${esc(L.A)}</button><button data-me="b" class="${me === "b" ? "on" : ""}">${esc(L.B)}</button></div>`;
+  return `<h2>${bTab === "pack" ? "여행 전 준비물" : "예산 관리"}</h2>${sw}<div class="tabs" id="tabs"><span class="ind"></span><button data-btab="add" class="${bTab === "add" ? "on" : ""}">기록</button><button data-btab="list" class="${bTab === "list" ? "on" : ""}">내역·정산</button><button data-btab="cats" class="${bTab === "cats" ? "on" : ""}">항목별</button><button data-btab="pack" class="${bTab === "pack" ? "on" : ""}">준비물</button></div><div id="tb">${body}</div>`;
 }
 /* ---------- receipt OCR ---------- */
 let tessP = null;
@@ -731,16 +782,16 @@ $("#root").innerHTML = `<div class="app"><div class="scroll" id="scroll">
 
 /* ---------- events ---------- */
 document.addEventListener("click", e => {
-  const rn = e.target.closest("#rcNav"); if (rn) { e.preventDefault(); bTab = "add"; if (view !== "budget") { location.hash = "#budget"; } else drawMain("tab"); setTimeout(() => { const a = $("#rc-in"); if (a) { a.scrollIntoView({block: "center", behavior: "smooth"}); } }, 300); return; }
+  const rn = e.target.closest("#rcNav"); if (rn) { e.preventDefault(); bTab = "add"; if (view !== "budget") { location.hash = "#budget"; } else { drawHero(); drawMain("tab"); } setTimeout(() => { const a = $("#rc-in"); if (a) { a.scrollIntoView({block: "center", behavior: "smooth"}); } }, 300); return; }
   const t = e.target.closest("button"); if (!t) return; const d = t.dataset;
   if (t.id === "rf") return hardRefresh(t);
   if (t.id === "undo" && undo) { S = undo; undo = null; persist(); drawAll(); return toast("되돌렸습니다"); }
   if (d.go !== undefined) return goDay(+d.go);
   if (d.tab) { tab = d.tab; return drawMain("tab"); }
-  if (d.btab) { bTab = d.btab; return drawMain("tab"); }
+  if (d.btab) { bTab = d.btab; if (view === "budget") drawHero(); return drawMain("tab"); }
   if (d.me) { me = d.me; try { localStorage.setItem("fk4-me", me); } catch (x) {} return drawAll(); }
   if (d.mf) { mapFocus = d.mf; return drawMain(); }
-  if (t.id === "fab") { if (view === "budget") { bTab = "add"; drawMain("tab"); setTimeout(() => { const a = $("#rc-in"); if (a) a.click(); }, 60); return; } if (view === "todo") { const x = $("#todo-new"); x.scrollIntoView({block: "center", behavior: "smooth"}); return x.focus({preventScroll: true}); } return openAgent(); }
+  if (t.id === "fab") { if (view === "budget") { bTab = "add"; drawHero(); drawMain("tab"); setTimeout(() => { const a = $("#rc-in"); if (a) a.click(); }, 60); return; } if (view === "todo") { const x = $("#todo-new"); x.scrollIntoView({block: "center", behavior: "smooth"}); return x.focus({preventScroll: true}); } return openAgent(); }
   if (t.id === "ag-go") return runAgent();
   if (t.id === "ag-mic") return startMic();
   if (t.id === "ag-manual") { closeAgent(); return setTimeout(() => openSheet(null), 200); }
@@ -755,6 +806,8 @@ document.addEventListener("click", e => {
   if (d.dx) { const snap = clone(S); S.expenses = S.expenses.filter(x => x.id !== d.dx); drawAll(); return save("지출을 지웠습니다", snap); }
   if (t.id === "x-add") { const a = parseFloat($("#x-amt").value.replace(/[^\d.]/g, "")); if (!(a > 0)) return $("#x-amt").focus(); const who = ($("#x-who .on") || {dataset: {}}).dataset.who || "a", kind = who === "c" ? "shared" : ($("#x-kind .on") || {dataset: {}}).dataset.kind || "shared"; S.expenses.push({id: uid(), cat: $("#x-cat").value, day: $("#x-day").value, amount: a, cur: ($("#x-cur .on") || {dataset: {}}).dataset.cur || "JPY", memo: $("#x-memo").value.trim(), kind, who}); bTab = "list"; drawAll(); return save(who === "c" ? "공용 결제로 기록했습니다" : "지출을 기록했습니다"); }
   if (t.id === "todo-add") { const v = $("#todo-new").value.trim(); if (!v) return $("#todo-new").focus(); S.todos.push({id: uid(), txt: v, done: false}); drawAll(); return save("추가했습니다"); }
+  if (t.id === "pack-add") { const el = $("#pack-new"), v = el.value.trim(); if (!v) return el.focus(); S.pack.push({id: uid(), txt: v, sub: "", done: false}); drawAll(); return save("준비물을 추가했습니다"); }
+  if (d.pkdel) { const pk = (S.pack || []).find(x => x.id === d.pkdel); if (!pk) return; const snap = clone(S); if ((SEED.pack || []).some(s => s.id === pk.id)) (S.packHidden = S.packHidden || []).push(pk.id); S.pack = S.pack.filter(x => x.id !== pk.id); drawAll(); return save("준비물을 뺐습니다", snap); }
   if (t.id === "gkeySave") { gKey = $("#gkey").value.trim(); try { gKey ? localStorage.setItem("fk4-gkey", gKey) : localStorage.removeItem("fk4-gkey"); } catch (x) {} gLib = null; Object.keys(GP).forEach(k => delete GP[k]); return toast(gKey ? "키를 저장했습니다. 일정 탭에서 사진을 불러옵니다" : "키를 지웠습니다"); }
   if (t.id === "bk-out") { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([JSON.stringify(S)], {type: "application/json"})); a.download = "fukuoka-trip-backup.json"; a.click(); return toast("백업 파일을 내려받았습니다"); }
   if (t.id === "f-close") return closeSheet();
@@ -778,6 +831,7 @@ document.addEventListener("click", e => {
 document.addEventListener("change", async e => {
   const t = e.target, d = t.dataset;
   if (d.todo) { S.todos.find(x => x.id === d.todo).done = t.checked; drawAll(); return save(t.checked ? "정했습니다" : "다시 정할 것으로 돌렸습니다"); }
+  if (d.pack) { const pk = (S.pack || []).find(x => x.id === d.pack); if (!pk) return; pk.done = !!t.checked; drawAll(); return save(pk.done ? "챙겼습니다" : "다시 챙길 것으로 돌렸습니다"); }
   if (d.paid) { const pb = S.budget.find(x => x.id === d.paid); if (!pb) return; pb.paid = !!t.checked; persistPaid(); drawAll(); return save(pb.paid ? "결제 완료로 저장했습니다" : "결제 완료를 풀었습니다"); }
   if (t.id === "rc-in" && t.files[0]) return readReceipt(t.files[0]);
   if (t.id === "nameA" || t.id === "nameB") { S[t.id] = t.value.trim().slice(0, 10); persist(); return toast("이름을 저장했습니다"); }
