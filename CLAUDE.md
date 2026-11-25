@@ -44,6 +44,7 @@ Claude Code가 **API 없이** 직접 일정을 찾아 `src/trip-data.js`에 넣�
 - `<head>`에 `apple-mobile-web-app-capable` 등 홈 화면 앱 메타와 캐시 방지 메타가 들어 있다. 그래서 홈 화면에서 열면 사파리 주소창 없이 뜬다.
 - 히어로의 세그먼트(일정·예산) 오른쪽 동그란 버튼(`#rf`, title/aria-label "새로고침")을 누르면 `hardRefresh()`가 `?v=타임스탬프`로 페이지를 다시 받는다. 저장된 일정·지출(localStorage)은 건드리지 않는다.
 - 일정을 올렸는데 폰에 안 보이면 이 버튼을 누르면 된다. 휴대폰이 홈 화면 앱을 캐시해 두는 경우가 있다.
+- **하단 높이(`src/template.html` 상단 CSS)**: 아이폰 홈 화면 앱(standalone) + `viewport-fit=cover`에서는 `height:100%`가 화면 높이에서 하단 홈 인디케이터 영역(약 34px)을 뺀 값으로 잡힌다(WebKit 알려진 동작). 그래서 standalone에서는 `html/body/#root`를 `100vh`로 채우고(`html.sa` 클래스 + `@media (display-mode:standalone)`), 휴대폰의 페이지 배경은 `#fff`로 둔다(회색 `#e9edf2`는 데스크톱 프레임용). 이걸 `height:100%`로 되돌리면 앱 아래에 회색 띠가 다시 생긴다.
 
 ## 화면 규칙
 
