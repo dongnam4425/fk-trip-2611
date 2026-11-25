@@ -37,6 +37,13 @@ Claude Code가 **API 없이** 직접 일정을 찾아 `src/trip-data.js`에 넣�
 - `src/template.html` — 화면·기능
 - `src/build.ps1` — 위 둘을 합쳐 `index.html` 생성 (`src/build.py`는 예전 방식, Motion 파일이 따로 필요)
 - `index.html` — 배포본. 직접 고치지 말고 빌드로 만든다.
+- `apple-touch-icon.png` — 아이폰 홈 화면 아이콘(180x180). 바꾸면 휴대폰에서 홈 화면에서 지우고 다시 추가해야 새 아이콘이 보인다.
+
+## 홈 화면 앱
+
+- `<head>`에 `apple-mobile-web-app-capable` 등 홈 화면 앱 메타와 캐시 방지 메타가 들어 있다. 그래서 홈 화면에서 열면 사파리 주소창 없이 뜬다.
+- 히어로의 세그먼트(일정·예산) 오른쪽 동그란 버튼(`#rf`, title/aria-label "새로고침")을 누르면 `hardRefresh()`가 `?v=타임스탬프`로 페이지를 다시 받는다. 저장된 일정·지출(localStorage)은 건드리지 않는다.
+- 일정을 올렸는데 폰에 안 보이면 이 버튼을 누르면 된다. 휴대폰이 홈 화면 앱을 캐시해 두는 경우가 있다.
 
 ## 화면 규칙
 
