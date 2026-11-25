@@ -2,7 +2,7 @@ const SEED = {
   v: 2, rate: 8.6638, total: 4000000,
   days: [
     {id:"d1", date:"2026-11-29", wd:"일요일", region:"하카타", scene:"flight", hotel:"도요 호텔", room:"더블룸, 2박 중 첫날", note:"", items:[
-      ["06:10","인천공항 출발","아시아나 OZ132", P("인천국제공항","Incheon International Airport")],
+      ["06:10","인천공항 출발","아시아나 OZ132 · 제2여객터미널", P("인천국제공항 제2여객터미널","Incheon International Airport Terminal 2")],
       ["07:35","후쿠오카공항 도착","", P("후쿠오카공항 국제선","Fukuoka Airport International Terminal")],
       ["07:35","입국심사, 수하물 수령","08:15까지", null],
       ["08:15","택시로 도요 호텔 이동","15분", P("도요 호텔","도요 호텔 하카타","더블룸, 11/29~12/01")],
@@ -25,7 +25,8 @@ const SEED = {
     {id:"d6", date:"2026-12-04", wd:"금요일", region:"인천으로", scene:"home", hotel:"", room:"", note:"", items:[
       ["체크아웃","호텔 체크아웃","", null],
       ["17:30","후쿠오카공항 도착 목표","18:00까지", P("후쿠오카공항 국제선","Fukuoka Airport International Terminal")],
-      ["20시대","후쿠오카공항 출발","티웨이항공", null]]}
+      ["20시대","후쿠오카공항 출발","티웨이항공", null],
+      ["도착","인천공항 도착","제1여객터미널 · 티웨이항공", P("인천국제공항 제1여객터미널","Incheon International Airport Terminal 1")]]}
   ],
   budget: [
     {id:"b1", cat:"왕복 항공권", amt:729400, fixed:true, paid:false},
