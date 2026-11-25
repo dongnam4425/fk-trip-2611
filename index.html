@@ -580,7 +580,7 @@ function budgetMain() {
     const pk = S.pack || [], dn = pk.filter(x => x.done).length, pct = pk.length ? dn / pk.length * 100 : 0;
     body = `<div class="card"><div class="ch"><div><b>준비 완료 ${dn}/${pk.length}</b><small>출발까지 ${dday()}</small></div><span class="t">${pct.toFixed(0)}<span style="font-size:14px;margin-left:2px">%</span></span></div><div class="gauge"><i style="width:${pct.toFixed(1)}%"></i></div></div>
       <div class="card" style="padding:4px 16px">${pk.map(x => `<div class="pk${x.done ? " done" : ""}"><label class="pkl"><input type="checkbox" data-pack="${esc(x.id)}"${x.done ? " checked" : ""}><span><b>${esc(x.txt)}</b>${x.sub ? `<small>${esc(x.sub)}</small>` : ""}</span></label><button class="x" data-pkdel="${esc(x.id)}" aria-label="${esc(x.txt)} 삭제">×</button></div>`).join("") || '<p class="empty">준비물이 비어 있어요. 아래에서 추가해보세요.</p>'}</div>
-      <div class="row" style="flex-wrap:nowrap"><input class="in" id="pack-new" placeholder="준비물 추가"><button class="btn" id="pack-add">추가</button></div>
+      <div class="row" style="flex-wrap:nowrap"><input class="in" id="pack-new" placeholder="준비물 추가" style="flex:1;min-width:0"><button class="btn" id="pack-add" style="flex:none;white-space:nowrap;padding:12px 18px">추가</button></div>
       <p class="sv" style="margin-top:10px">체크한 상태는 이 휴대폰에 저장돼요. 목록이 새로 올라와도 체크는 그대로 남아요.</p>`;
   }
   else { const fx = S.budget.filter(b => b.fixed), pd = fx.filter(b => b.paid);
