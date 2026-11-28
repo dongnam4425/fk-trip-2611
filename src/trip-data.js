@@ -1,5 +1,5 @@
 const SEED = {
-  v: 2, rate: 8.6638, total: 4000000,
+  v: 2, rate: 8.6638, total: 4015000,
   days: [
     {id:"d1", date:"2026-11-29", wd:"일요일", region:"하카타", scene:"flight", hotel:"도요 호텔", room:"더블룸, 2박 중 첫날", note:"", items:[
       ["06:10","인천공항 출발","아시아나 OZ132", P("인천국제공항 제2여객터미널","Incheon International Airport Terminal 2")],
@@ -34,7 +34,7 @@ const SEED = {
     {id:"b3", cat:"가하마 료칸 1박", amt:458888, fixed:true, paid:false},
     {id:"b4", cat:"오리엔탈 익스프레스 2박", amt:288786, fixed:true, paid:false},
     {id:"b5", cat:"식비, 디저트", amt:1000000}, {id:"b6", cat:"교통비", amt:220000}, {id:"b7", cat:"관광, 체험", amt:100000},
-    {id:"b8", cat:"기념품, 일반 쇼핑", amt:400000}, {id:"b9", cat:"의류 쇼핑", amt:605384}, {id:"b10", cat:"eSIM, 여행자보험", amt:40000},
+    {id:"b8", cat:"기념품, 일반 쇼핑", amt:400000}, {id:"b9", cat:"의류 쇼핑", amt:605384}, {id:"b10", cat:"eSIM, 여행자보험", amt:55000, fixed:true, paid:true},
     // 여행 전 준비물(캐리어 등) 지출을 따로 모으는 칸. 예산은 0에서 시작하고, 항목별 화면에서 숫자를 눌러 올리거나
     // '항목 추가'로 캐리어 10만원 같은 항목을 직접 넣으면 된다. id b11~은 기본 항목(budgetHidden으로 지우기 가능).
     {id:"b11", cat:"준비물", amt:0}],
