@@ -428,11 +428,15 @@ function mergeSeed(old) {
   // 앱에서 '항목 추가'로 넣은 항목("u" + uid() id)은 기본 목록에 없으므로 그대로 남는다.
   const hidB = new Set(old.budgetHidden || []); r.budgetHidden = [...hidB];
   r.budget = (old.budget || []).filter(b => !hidB.has(b.id)).map(b => clone(b));
-  // 기본 항목(b1~)은 시드에서 금액·이름·고정 여부가 바뀌면 그대로 따라간다(결제 완료 표시 paid는 그대로 이어받음).
-  // 앱에서 금액을 고칠 때는 S.pb[사람][항목id]에만 쓰므로 여기서 덮어써도 사용자가 넣은 값은 지워지지 않는다.
+  // 이 휴대폰에서 직접 누른 결제 완료(fk4-paid)가 있으면 그 선택이 우선이다.
+  let paidSet = null; try { paidSet = JSON.parse(localStorage.getItem("fk4-paid") || "null"); } catch (e) {}
+  // 기본 항목(b1~)은 시드에서 금액·이름·고정 여부가 바뀌면 그대로 따라간다. 앱에서 금액을 고칠 때는 S.pb[사람][항목id]에만 쓰므로
+  // 여기서 덮어써도 사용자가 정한 값은 지워지지 않는다. 결제 완료(paid)는 손대지 않고 이어받되, 시드가 결제 완료로 올린 항목은
+  // 이 휴대폰에 체크를 풀어 둔 기록이 없을 때만 반영한다(예전 병합이 남긴 false 때문에 새 결제가 안 보이는 것을 막는다).
   SEED.budget.forEach(b => { if (hidB.has(b.id)) return; const o = r.budget.find(x => x.id === b.id); if (!o) { r.budget.push(clone(b)); return; }
     if (/^b\d+$/.test(b.id)) { o.amt = b.amt; o.cat = b.cat; o.fixed = !!b.fixed; }
-    if (o.paid === undefined) o.paid = !!b.paid; });
+    if (o.paid === undefined) o.paid = !!b.paid;
+    else if (b.paid && !(paidSet && Object.prototype.hasOwnProperty.call(paidSet, b.id))) o.paid = true; });
   return r;
 }
 let merged = false;
